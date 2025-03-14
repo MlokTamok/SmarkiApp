@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "478244185575",
+    "project_id": "smarki-b4407",
+    "storage_bucket": "smarki-b4407.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:478244185575:android:012a760ad61b81e9660942",
+        "android_client_info": {
+          "package_name": "com.example.smarkiapp2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgSoYnoBDAClhm5QrsmamiIzui38u6lg0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
