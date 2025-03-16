@@ -1,4 +1,4 @@
-import 'dart:convert';  // Import pro JSON
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smarkiapp2/add_device_screen.dart';
@@ -12,30 +12,27 @@ class Devices_Screen extends StatefulWidget {
 class _Devices_ScreenState extends State<Devices_Screen> {
   List<Map<String, String>> devices = [];
 
-  // Načítání zařízení z SharedPreferences
   Future<void> loadDevices() async {
     final prefs = await SharedPreferences.getInstance();
     final String? devicesData = prefs.getString('devices');
     if (devicesData != null) {
-      // Pokusíme se dekódovat JSON, pokud je dostupný
-      List<dynamic> jsonList = json.decode(devicesData); // Deserializace JSON řetězce na seznam
+      List<dynamic> jsonList = json.decode(devicesData);
       setState(() {
-        devices = jsonList.map((item) => Map<String, String>.from(item)).toList(); // Převedeme na seznam map
+        devices = jsonList.map((item) => Map<String, String>.from(item)).toList();
       });
     }
   }
 
-  // Ukládání zařízení do SharedPreferences
   Future<void> saveDevices() async {
     final prefs = await SharedPreferences.getInstance();
-    String devicesJson = json.encode(devices);  // Serializujeme do JSON
-    prefs.setString('devices', devicesJson); // Uložíme jako JSON řetězec
+    String devicesJson = json.encode(devices); 
+    prefs.setString('devices', devicesJson);
   }
 
   @override
   void initState() {
     super.initState();
-    loadDevices();  // Načteme zařízení při startu obrazovky
+    loadDevices();
   }
 
   @override
@@ -80,7 +77,7 @@ class _Devices_ScreenState extends State<Devices_Screen> {
                 onDeviceAdded: (newDevice) {
                   setState(() {
                     devices.add(newDevice);
-                    saveDevices(); // Uložíme nové zařízení
+                    saveDevices();
                   });
                 },
               ),
