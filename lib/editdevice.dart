@@ -45,15 +45,12 @@ class _EditDeviceScreenState extends State<EditDeviceScreen> {
   }
 
   void saveChanges() async {
-    // Aktualizace zařízení
     widget.device['name'] = _nameController.text;
     widget.device['location'] = _locationController.text;
     widget.device['users'] = users;  // Uložení uživatelů
 
-    // Zavoláme funkci pro uložení zařízení do SharedPreferences
     saveDevice(widget.device);
 
-    // Vrátíme se zpět do předchozí obrazovky
     Navigator.pop(context, widget.device);
   }
 
@@ -68,7 +65,6 @@ class _EditDeviceScreenState extends State<EditDeviceScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              // Zařízení: Název a umístění
               TextField(
                 controller: _nameController,
                 decoration: InputDecoration(labelText: "Device Name"),
@@ -80,7 +76,6 @@ class _EditDeviceScreenState extends State<EditDeviceScreen> {
               
               SizedBox(height: 20),
               
-              // Přidání uživatelů
               Text("Add Users", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               TextField(
                 controller: _userNameController,
@@ -103,7 +98,6 @@ class _EditDeviceScreenState extends State<EditDeviceScreen> {
               
               SizedBox(height: 20),
               
-              // Zobrazení seznamu uživatelů
               Text("Users List:", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               ListView.builder(
                 itemCount: users.length,
