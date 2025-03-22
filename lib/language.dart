@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:smarkiapp2/CZ/language_cz.dart';
 import 'package:smarkiapp2/account.dart';
-import 'package:smarkiapp2/deices.dart';
-import 'package:smarkiapp2/CZ/language%20cz.dart';
 import 'package:flag/flag.dart';
+import 'package:smarkiapp2/deices.dart';
 
-void main() => runApp(Language());
 
 
 class Language extends StatelessWidget {
@@ -20,16 +19,18 @@ class Language extends StatelessWidget {
           leading: Builder(
             builder: (BuildContext context) {
               return IconButton(
-                onPressed: (){
-                Navigator.pushReplacement(
+                onPressed: () {
+                  Navigator.pushReplacement(
                   context,
-                   MaterialPageRoute(builder: (context) => Devices_Screen()),
-                 );
-                },
-                icon: Icon(Icons.home),
+                  MaterialPageRoute<void>(
+                    builder: (BuildContext context) => DevicesScreen(),
+                    ),
+                  );
+                  },
+                icon: Icon(Icons.arrow_back_ios_rounded),
                 color: Color.fromRGBO(63, 80, 66, 1),
-               );
-            }
+              );
+            },
           ),
           backgroundColor: const Color(0xFFAAD2BA),
           title:
@@ -208,4 +209,3 @@ class Language extends StatelessWidget {
     );
   }
 }
-

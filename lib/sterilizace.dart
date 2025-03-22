@@ -190,7 +190,7 @@ class _Sterilizace extends State<Sterilizace> {
                 onPressed: (){
                 Navigator.pushReplacement(
                   context,
-                   MaterialPageRoute(builder: (context) => Devices_Screen()),
+                   MaterialPageRoute(builder: (context) => DevicesScreen()),
                  );
                 },
                 icon: Icon(Icons.arrow_back_ios_rounded),

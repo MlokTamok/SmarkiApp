@@ -13,7 +13,7 @@ class EditDeviceScreen extends StatefulWidget {
 class _EditDeviceScreenState extends State<EditDeviceScreen> {
   late TextEditingController _nameController;
   late TextEditingController _locationController;
-  
+
   final _userNameController = TextEditingController();
   final _userLastNameController = TextEditingController();
   final _userPhoneController = TextEditingController();
@@ -25,35 +25,39 @@ class _EditDeviceScreenState extends State<EditDeviceScreen> {
     super.initState();
     _nameController = TextEditingController(text: widget.device['name']);
     _locationController = TextEditingController(text: widget.device['location']);
-    
+
     if (widget.device['users'] != null) {
       users = List<Map<String, String>>.from(widget.device['users']);
     }
   }
 
   void addUser() {
-    setState(() {
-      users.add({
-        'name': _userNameController.text,
-        'lastName': _userLastNameController.text,
-        'phone': _userPhoneController.text,
+    if (_userNameController.text.isNotEmpty &&
+        _userLastNameController.text.isNotEmpty &&
+        _userPhoneController.text.isNotEmpty) {
+      setState(() {
+        users.add({
+          'name': _userNameController.text,
+          'lastName': _userLastNameController.text,
+          'phone': _userPhoneController.text,
+        });
+        _userNameController.clear();
+        _userLastNameController.clear();
+        _userPhoneController.clear();
       });
-      _userNameController.clear();
-      _userLastNameController.clear();
-      _userPhoneController.clear();
-    });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Please fill in all user fields.")),
+      );
+    }
   }
 
   void saveChanges() async {
-    // Aktualizace zařízení
     widget.device['name'] = _nameController.text;
     widget.device['location'] = _locationController.text;
-    widget.device['users'] = users;  // Uložení uživatelů
+    //widget.device['users'] = users;
 
-    // Zavoláme funkci pro uložení zařízení do SharedPreferences
     saveDevice(widget.device);
-
-    // Vrátíme se zpět do předchozí obrazovky
     Navigator.pop(context, widget.device);
   }
 
@@ -61,14 +65,23 @@ class _EditDeviceScreenState extends State<EditDeviceScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Edit Device"),
+        backgroundColor: Color(0xFFAAD2BA),
+        title: Text("Edit Device",style: TextStyle(
+              color: const Color.fromRGBO(63, 80, 66, 1),
+              fontWeight: FontWeight.bold,
+            ),),
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios_rounded),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
-      body: Padding(
+      body:
+      Padding(
         padding: EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
             children: [
-              // Zařízení: Název a umístění
               TextField(
                 controller: _nameController,
                 decoration: InputDecoration(labelText: "Device Name"),
@@ -77,10 +90,7 @@ class _EditDeviceScreenState extends State<EditDeviceScreen> {
                 controller: _locationController,
                 decoration: InputDecoration(labelText: "Device Location"),
               ),
-              
-              SizedBox(height: 20),
-              
-              // Přidání uživatelů
+              SizedBox(height: 25),
               Text("Add Users", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               TextField(
                 controller: _userNameController,
@@ -95,15 +105,12 @@ class _EditDeviceScreenState extends State<EditDeviceScreen> {
                 decoration: InputDecoration(labelText: "User Phone Number"),
                 keyboardType: TextInputType.phone,
               ),
-              
+              SizedBox(height: 10,),
               ElevatedButton(
                 onPressed: addUser,
                 child: Text("Add User"),
               ),
-              
               SizedBox(height: 20),
-              
-              // Zobrazení seznamu uživatelů
               Text("Users List:", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               ListView.builder(
                 itemCount: users.length,
@@ -116,10 +123,7 @@ class _EditDeviceScreenState extends State<EditDeviceScreen> {
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
               ),
-              
               SizedBox(height: 20),
-              
-              // Uložení změn
               ElevatedButton(
                 onPressed: saveChanges,
                 child: Text("Save Changes"),

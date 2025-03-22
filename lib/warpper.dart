@@ -21,7 +21,7 @@ class _WarpperState extends State<Warpper> {
           if (snapshot.hasData){
             print(snapshot.data);
             if(snapshot.data!.emailVerified){
-              return Devices_Screen();
+              return DevicesScreen();
             }else{
               return Verify();
             }

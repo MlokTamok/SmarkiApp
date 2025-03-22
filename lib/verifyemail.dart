@@ -52,7 +52,7 @@ class _VerifyState extends State<Verify> {
         title: Text('Verification'),
         centerTitle: true,
         leading: IconButton(  
-          icon: Icon(Icons.arrow_back, color: Color.fromRGBO(63, 80, 66, 1),),
+          icon: Icon(Icons.arrow_back_ios_rounded, color: Color.fromRGBO(63, 80, 66, 1),),
           onPressed: goBack,
         ),
       ),

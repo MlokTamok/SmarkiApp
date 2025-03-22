@@ -23,7 +23,7 @@ class CZLanguage extends StatelessWidget {
                 onPressed: (){
                 Navigator.pushReplacement(
                   context,
-                   MaterialPageRoute(builder: (context) => Devices_Screen()),
+                   MaterialPageRoute(builder: (context) => DevicesScreen()),
                  );
                 },
                 icon: Icon(Icons.home),
@@ -140,6 +140,13 @@ class CZLanguage extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => CZLanguage()),///////////////
                 );
                 },
+                style: 
+                ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)
+                  ),
+                  backgroundColor: Color.fromRGBO(107, 143, 113, 0.3),
+                ),
                 child:
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -152,13 +159,6 @@ class CZLanguage extends StatelessWidget {
                       color: Color.fromRGBO(185, 245, 216, 1),
                     ),)
                   ],
-                ),
-                style: 
-                ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)
-                  ),
-                  backgroundColor: Color.fromRGBO(107, 143, 113, 0.3),
                 )
                 ),
                 
@@ -176,6 +176,13 @@ class CZLanguage extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => Language()),
                 );
                 },
+                style: 
+                ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)
+                  ),
+                  backgroundColor: Color.fromRGBO(107, 143, 113, 1),
+                ),
                 child:
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -188,13 +195,6 @@ class CZLanguage extends StatelessWidget {
                       color: Color.fromRGBO(185, 245, 216, 1)
                     ),)
                   ],
-                ),
-                style: 
-                ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)
-                  ),
-                  backgroundColor: Color.fromRGBO(107, 143, 113, 1),
                 )
                 )
                 ),
@@ -207,4 +207,3 @@ class CZLanguage extends StatelessWidget {
     );
   }
 }
-
