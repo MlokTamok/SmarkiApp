@@ -14,41 +14,29 @@ class DevicesScreen extends StatefulWidget {
 class _DevicesScreenState extends State<DevicesScreen> {
   List<Map<String, String>> devices = [];
 
-  @override
-  void initState() {
-    super.initState();
-    loadDevices();
-  }
-
+  // Načítání zařízení z SharedPreferences
   Future<void> loadDevices() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final String? devicesData = prefs.getString('devices');
-      if (devicesData != null && devicesData.isNotEmpty) {
-        final List<dynamic> jsonList = json.decode(devicesData);
-        setState(() {
-          devices = jsonList.map((item) => Map<String, String>.from(item)).toList();
-        });
-      }
-    } catch (e) {
-      debugPrint("Error loading devices: $e");
+    final prefs = await SharedPreferences.getInstance();
+    final String? devicesData = prefs.getString('devices');
+    if (devicesData != null) {
+      // Pokusíme se dekódovat JSON, pokud je dostupný
+      List<dynamic> jsonList = json.decode(devicesData); // Deserializace JSON řetězce na seznam
+      setState(() {
+        devices = jsonList.map((item) => Map<String, String>.from(item)).toList(); // Převedeme na seznam map
+      });
     }
   }
 
   Future<void> saveDevices() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('devices', json.encode(devices));
-    } catch (e) {
-      debugPrint("Error saving devices: $e");
-    }
+    final prefs = await SharedPreferences.getInstance();
+    String devicesJson = json.encode(devices);  // Serializujeme do JSON
+    prefs.setString('devices', devicesJson); // Uložíme jako JSON řetězec
   }
 
-  void addDevice(Map<String, String> newDevice) {
-    setState(() {
-      devices.add(newDevice);
-    });
-    saveDevices();
+  @override
+  void initState() {
+    super.initState();
+    loadDevices();  // Načteme zařízení při startu obrazovky
   }
 
   @override
@@ -171,12 +159,16 @@ class _DevicesScreenState extends State<DevicesScreen> {
           final newDevice = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => AddDeviceScreen(onDeviceAdded: addDevice),
+              builder: (context) => AddDeviceScreen(
+                onDeviceAdded: (newDevice) {
+                  setState(() {
+                    devices.add(newDevice);
+                    saveDevices(); // Uložíme nové zařízení
+                  });
+                },
+              ),
             ),
           );
-          if (newDevice != null && newDevice is Map<String, String>) {
-            addDevice(newDevice);
-          }
         },
         backgroundColor: const Color.fromARGB(255, 150, 185, 164),
         child: const Icon(Icons.add, color: Color.fromRGBO(185, 245, 216, 1)),
