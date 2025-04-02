@@ -1,17 +1,24 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:smarkiapp2/deices.dart';
 import 'package:smarkiapp2/passwordreset.dart';
 import 'package:smarkiapp2/language.dart';
+import 'package:smarkiapp2/warpper.dart';
 
 void main() => runApp(Account());
 
 class Account extends StatelessWidget {
   final user = FirebaseAuth.instance.currentUser;
 
-  signout() async {
-    await FirebaseAuth.instance.signOut();
-  }
+  signout(BuildContext context) async {
+  await FirebaseAuth.instance.signOut();
+  Navigator.pushAndRemoveUntil(
+    context,
+    MaterialPageRoute(builder: (context) => const Warpper()), // Redirect to the Warpper
+    (route) => false, // Remove all previous routes
+  );
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -24,12 +31,7 @@ class Account extends StatelessWidget {
           leading: Builder(
             builder: (BuildContext context) {
               return IconButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => DevicesScreen()),
-                  );
-                  },
+                onPressed: () => Navigator.pop(context), // Fixed
                 icon: Icon(Icons.arrow_back_ios_new_rounded),
                 color: Color.fromRGBO(63, 80, 66, 1),
               );
@@ -65,7 +67,7 @@ class Account extends StatelessWidget {
                     ],
                   ),
                   onTap: () {
-                    Navigator.pushReplacement(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => Language()),
                     );
@@ -82,7 +84,7 @@ class Account extends StatelessWidget {
                     ],
                   ),
                   onTap: () {
-                    Navigator.pushReplacement(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => Language()),
                     );
@@ -99,7 +101,7 @@ class Account extends StatelessWidget {
                     ],
                   ),
                   onTap: () {
-                    Navigator.pushReplacement(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => Language()),
                     );
@@ -116,7 +118,7 @@ class Account extends StatelessWidget {
                     ],
                   ),
                   onTap: () {
-                    Navigator.pushReplacement(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => Account()),
                     );
@@ -149,7 +151,7 @@ class Account extends StatelessWidget {
                   ),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => ResetPassword()),
                       );
@@ -165,7 +167,7 @@ class Account extends StatelessWidget {
                     ),
                   ),
                   TextButton(
-                    onPressed: (() => signout()),
+                    onPressed: () => signout(context),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

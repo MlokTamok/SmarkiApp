@@ -14,30 +14,30 @@ class DevicesScreen extends StatefulWidget {
 class _DevicesScreenState extends State<DevicesScreen> {
   List<Map<String, String>> devices = [];
 
-  // Načítání zařízení z SharedPreferences
   Future<void> loadDevices() async {
     final prefs = await SharedPreferences.getInstance();
     final String? devicesData = prefs.getString('devices');
     if (devicesData != null) {
-      // Pokusíme se dekódovat JSON, pokud je dostupný
-      List<dynamic> jsonList = json.decode(devicesData); // Deserializace JSON řetězce na seznam
+      List<dynamic> jsonList = json.decode(devicesData);
       setState(() {
-        devices = jsonList.map((item) => Map<String, String>.from(item)).toList(); // Převedeme na seznam map
+        devices = jsonList.map((item) => Map<String, String>.from(item)).toList();
       });
     }
   }
 
   Future<void> saveDevices() async {
     final prefs = await SharedPreferences.getInstance();
-    String devicesJson = json.encode(devices);  // Serializujeme do JSON
-    prefs.setString('devices', devicesJson); // Uložíme jako JSON řetězec
+    String devicesJson = json.encode(devices);
+    prefs.setString('devices', devicesJson);
   }
 
   @override
   void initState() {
     super.initState();
-    loadDevices();  // Načteme zařízení při startu obrazovky
+    loadDevices();
   }
+  
+  
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +45,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
       appBar: AppBar(
           backgroundColor: const Color(0xFFAAD2BA),
           title:
-          Text("Yours Devices", 
+          Text("Your Devices", 
           style: 
           TextStyle(
             color: const Color.fromRGBO(63, 80, 66, 1),
@@ -74,7 +74,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
                 ],
                 ),
                 onTap: () {
-                  Navigator.pushReplacement(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => Language()),
                   );
@@ -91,7 +91,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
                 ],
                 ),
                 onTap: () {
-                  Navigator.pushReplacement(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => Language()),
                   );
@@ -108,7 +108,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
                 ],
                 ),
                 onTap: () {
-                  Navigator.pushReplacement(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => Language()),
                   );
@@ -125,7 +125,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
                 ],
                 ),
                 onTap: () {
-                  Navigator.pushReplacement(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => Account()),
                   );
@@ -143,19 +143,27 @@ class _DevicesScreenState extends State<DevicesScreen> {
                 return ListTile(
                   title: Text(device['name'] ?? 'No Name'),
                   subtitle: Text('Location: ${device['location'] ?? 'Unknown'}'),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DeviceMenu(device: device),
-                      ),
-                    );
-                  },
+                  onTap: () async {
+                  final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                  builder: (context) => DeviceMenu(device: device),
+                  ),
+                  );
+
+                  if (result == 'deleted') {
+                setState(() {
+                devices.removeWhere((d) => d['name'] == device['name']);
+                saveDevices();
+                });
+                }
+                },
                 );
               },
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
+          // ignore: unused_local_variable
           final newDevice = await Navigator.push(
             context,
             MaterialPageRoute(
@@ -163,7 +171,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
                 onDeviceAdded: (newDevice) {
                   setState(() {
                     devices.add(newDevice);
-                    saveDevices(); // Uložíme nové zařízení
+                    saveDevices();
                   });
                 },
               ),

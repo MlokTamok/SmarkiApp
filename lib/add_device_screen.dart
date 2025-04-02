@@ -3,14 +3,15 @@ import 'package:flutter/material.dart';
 class AddDeviceScreen extends StatefulWidget {
   final Function(Map<String, String>) onDeviceAdded;
 
-  AddDeviceScreen({required this.onDeviceAdded});
+  const AddDeviceScreen({super.key, required this.onDeviceAdded});
 
   @override
+  // ignore: library_private_types_in_public_api
   _AddDeviceScreenState createState() => _AddDeviceScreenState();
 }
 
 class _AddDeviceScreenState extends State<AddDeviceScreen> {
-  final _formKey = GlobalKey<FormState>(); // Form Key
+  final _formKey = GlobalKey<FormState>();
 
   final _deviceNameController = TextEditingController();
   final _deviceLocationController = TextEditingController();
@@ -20,7 +21,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
   final _deviceFloorController = TextEditingController();
 
   String? _deviceTypeController;
-  final List<String> _deviceTypes = ['Kitchen', 'Air', 'A/C'];
+  final List<String> _deviceTypes = ['Kitchen hood', 'Air purifier', 'Air Conditioning'];
 
   String? _deviceVersionController;
   final List<String> _deviceVersions = ['SMARKI DK 90', 'SMARKI DK 60', 'SMARKI DS 90'];
@@ -61,12 +62,21 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
-          key: _formKey, // Attach the form key
+          key: _formKey,
+          child: SingleChildScrollView(
           child: Column(
             children: [
               TextFormField(
                 controller: _deviceNameController,
-                decoration: InputDecoration(labelText: "Device Name"),
+                decoration: InputDecoration(
+                  labelText: "Device Name",
+                  border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide.none,
+              ),
+              fillColor: Color.fromRGBO(107, 143, 113, 0.1),
+              filled: true,
+              ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return "Device name is required";
@@ -79,6 +89,14 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
                 value: _deviceTypeController,
                 hint: Text('Select Device Type'),
                 isExpanded: true,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(18),
+                    borderSide: BorderSide.none,
+                  ),
+                  fillColor: Color.fromRGBO(107, 143, 113, 0.1),
+                  filled: true
+                ),
                 items: _deviceTypes.map((String type) {
                   return DropdownMenuItem<String>(
                     value: type,
@@ -98,10 +116,19 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
                 },
               ),
               SizedBox(height: 12,),
+
               DropdownButtonFormField<String>(
                 value: _deviceVersionController,
                 hint: Text('Select Device Version'),
                 isExpanded: true,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(18),
+                    borderSide: BorderSide.none,
+                  ),
+                  fillColor: Color.fromRGBO(107, 143, 113, 0.1),
+                  filled: true
+                ),
                 items: _deviceVersions.map((String type) {
                   return DropdownMenuItem<String>(
                     value: type,
@@ -123,7 +150,15 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
               SizedBox(height: 12,),
               TextFormField(
                 controller: _deviceLocationController,
-                decoration: InputDecoration(labelText: "Device Location"),
+                decoration: InputDecoration(
+                  labelText: "Device Location",
+                  border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide.none,
+              ),
+              fillColor: Color.fromRGBO(107, 143, 113, 0.1),
+              filled: true,
+              ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return "Device location is required";
@@ -134,7 +169,15 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
               SizedBox(height: 12,),
               TextFormField(
                 controller: _deviceTownController,
-                decoration: InputDecoration(labelText: "Town"),
+                decoration: InputDecoration(
+                  labelText: "Town",
+                  border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide.none,
+              ),
+              fillColor: Color.fromRGBO(107, 143, 113, 0.1),
+              filled: true,
+              ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return "Town is required";
@@ -145,7 +188,15 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
               SizedBox(height: 12,),
               TextFormField(
                 controller: _deviceStreetController,
-                decoration: InputDecoration(labelText: "Street"),
+                decoration: InputDecoration(
+                  labelText: "Street",
+                  border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide.none,
+              ),
+              fillColor: Color.fromRGBO(107, 143, 113, 0.1),
+              filled: true,
+              ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return "Street is required";
@@ -156,7 +207,15 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
               SizedBox(height: 12,),
               TextFormField(
                 controller: _deviceHouseNumberController,
-                decoration: InputDecoration(labelText: "House Number"),
+                decoration: InputDecoration(
+                  labelText: "House Number",
+                  border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide.none,
+              ),
+              fillColor: Color.fromRGBO(107, 143, 113, 0.1),
+              filled: true,
+              ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return "House number is required";
@@ -167,21 +226,30 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
               SizedBox(height: 12,),
               TextFormField(
                 controller: _deviceFloorController,
-                decoration: InputDecoration(labelText: "Floor")
+                decoration: InputDecoration(
+                  labelText: "Floor",
+                  border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide.none,
+              ),
+              fillColor: Color.fromRGBO(107, 143, 113, 0.1),
+              filled: true,
+              ),
               ),
               SizedBox(height: 12),
               ElevatedButton(
                 onPressed: saveDevice,
-                child: 
-                Text("Save Device", style: TextStyle(color: Color.fromRGBO(185, 245, 216, 1),),),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromRGBO(107, 143, 113, 1),
                 ),
+                child: 
+                Text("Save Device", style: TextStyle(color: Color.fromRGBO(185, 245, 216, 1),),),
               ),
             ],
           ),
         ),
       ),
+      )
     );
   }
 }

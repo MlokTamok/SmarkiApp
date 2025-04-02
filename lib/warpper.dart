@@ -15,21 +15,27 @@ class _WarpperState extends State<Warpper> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: StreamBuilder(
-        stream: FirebaseAuth.instance.authStateChanges(), 
-        builder: (context, snapshot){
-          if (snapshot.hasData){
-            print(snapshot.data);
-            if(snapshot.data!.emailVerified){
-              return DevicesScreen();
-            }else{
-              return Verify();
+      body: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.active) {
+            if (snapshot.hasData) {
+              final user = snapshot.data;
+              if (user != null && user.emailVerified) {
+                return DevicesScreen(); // User verified
+              } else {
+                return Verify(); // User not verified
+              }
+            } else {
+              return LoginPage(); // Not logged in
             }
-          }else{
-            return LoginPage();
+          } else {
+            return Center(
+              child: CircularProgressIndicator(), // While checking auth state
+            );
           }
-        }
-        ),
+        },
+      ),
     );
   }
 }
