@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:smarkiapp2/account.dart';
 import 'package:smarkiapp2/language.dart';
+//import 'package:wheel_picker/wheel_picker.dart';
+
 
 class Sterilizace extends StatefulWidget {
   final Map<String, String> device;
@@ -115,7 +117,7 @@ class _SterilizaceState extends State<Sterilizace> {
           },
         ),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text('Small\n up to 20m²', textAlign: TextAlign.center),
             Text('Medium\n20 to 50m²', textAlign: TextAlign.center),
@@ -125,6 +127,9 @@ class _SterilizaceState extends State<Sterilizace> {
       ],
     );
   }
+
+  
+  
 
   Widget _buildPopupMenu() {
     return PopupMenuButton<String>(
@@ -168,4 +173,6 @@ class _SterilizaceState extends State<Sterilizace> {
       ),
     );
   }
+  
 }
+

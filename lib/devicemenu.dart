@@ -1,303 +1,105 @@
 import 'package:flutter/material.dart';
-import 'package:smarkiapp2/editdevice.dart';
-import 'package:smarkiapp2/sterilizace.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smarkiapp2/account.dart';
+import 'package:smarkiapp2/language.dart';
 
-class DeviceMenu extends StatelessWidget {
-  final Map<String, String> device;
+class DevicesScreen extends StatefulWidget {
+  @override
+  _DevicesScreenState createState() => _DevicesScreenState();
+}
 
-  DeviceMenu({required this.device});
-
+class _DevicesScreenState extends State<DevicesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFFAAD2BA),
-        title: Text(device['name'] ?? 'Device Menu', style: TextStyle(
-              color: const Color.fromRGBO(63, 80, 66, 1),
-              fontWeight: FontWeight.bold,
-            ),),
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_rounded, color: Color.fromRGBO(63, 80, 66, 1),),
-          onPressed: () => Navigator.pop(context),
+        backgroundColor: const Color(0xFFAAD2BA),
+        title: const Text(
+          "Your Devices",
+          style: TextStyle(
+              color: Color.fromRGBO(63, 80, 66, 1), fontWeight: FontWeight.bold),
         ),
-      ),
-      
-      body: Padding(
-        padding: const EdgeInsets.all(1.0),
-          child: SingleChildScrollView(
-          child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Padding(padding: EdgeInsetsDirectional.fromSTEB(50, 50, 0, 0),
-                child:
-                SizedBox(
-                  width: 130,
-                  height: 130,
-                  child: 
-                ElevatedButton(onPressed: (){
-                  Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Sterilizace(device: device)
-                  ),
-                );
-                },
-                style: 
-                ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)
-                  ),
-                  backgroundColor: Color.fromRGBO(107, 143, 113, 1),
-                ),
-                child:
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.lightbulb, size: 40, color: Color.fromRGBO(185, 245, 216, 1),),
-                        Icon(Icons.air, size: 37, color: Color.fromRGBO(185, 245, 216, 1),),
-                    ]
-                    ),
-                    Text('Lighting\n& Extraction', 
-                    textAlign: TextAlign.center,
-                    style: 
-                    TextStyle(
-                      color: Color.fromRGBO(185, 245, 216, 1),
-                    ),)
-                  ],
-                )
-                ),
-                
-                ),
-                ),
-                Padding(padding: EdgeInsetsDirectional.fromSTEB(0, 50, 50, 0),
-                child:
-                SizedBox(
-                  width: 130,
-                  height: 130,
-                  child:
-                ElevatedButton(onPressed: (){
-                  Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Sterilizace(device: device)
-                    ),
-                );
-                },
-                style: 
-                ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)
-                  ),
-                  backgroundColor: Color.fromRGBO(107, 143, 113, 1),
-                ),
-                child:
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.light, size: 55, color: Color.fromRGBO(185, 245, 216, 1)),
-                    Text("Sterilization", 
-                    style: 
-                    TextStyle(
-                      color: Color.fromRGBO(185, 245, 216, 1)
-                    ),)
-                  ],
-                )
-                )
-                ),
-                ),
-              ]
-
+        centerTitle: true,
+        actions: [
+          PopupMenuButton(
+            color: const Color.fromRGBO(107, 143, 113, 1),
+            icon: const Icon(Icons.menu_rounded, color: Color.fromRGBO(63, 80, 66, 1)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: const BorderSide(color: Colors.grey),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Padding(padding: EdgeInsetsDirectional.fromSTEB(50, 20, 0, 0),
-                child:
-                SizedBox(
-                  width: 130,
-                  height: 130,
-                  child: 
-                ElevatedButton(onPressed: (){
-                  print('...');
-                },
-                style: 
-                ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)
-                  ),
-                  backgroundColor: Color.fromRGBO(107, 143, 113, 1),
-                ),
-                child:
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.soup_kitchen, size: 55, color: Color.fromRGBO(185, 245, 216, 1)),
-                    Text("Cooking", 
-                    style: 
-                    TextStyle(
-                      color: Color.fromRGBO(185, 245, 216, 1)
-                    ),)
-                  ],
-                )
-                )
-                ),
-                ),
-                Padding(padding: EdgeInsetsDirectional.fromSTEB(0, 20, 50, 0),
-                child:
-                SizedBox(
-                  width: 130,
-                  height: 130,
-                  child: 
-                ElevatedButton(onPressed: (){
-                  print('...');
-                },
-                style: 
-                ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)
-                  ),
-                  backgroundColor: Color.fromRGBO(107, 143, 113, 1),
-                ),
-                child:
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.video_file, size: 55, color: Color.fromRGBO(185, 245, 216, 1)),
-                    Text("Audio\n& Video", 
-                    textAlign: TextAlign.center,
-                    style: 
-                    TextStyle(
-                      color: Color.fromRGBO(185, 245, 216, 1)
-                    ),)
-                  ],
-                )
-                )
-                ),
-                ),
-              ]
+            itemBuilder: (context) => [
+              _buildMenuItem("Language", Icons.language, () => Language()),
+              _buildMenuItem("Country", Icons.public, () => Language()),
+              _buildMenuItem("Time Zone", Icons.access_time, () => Language()),
+              _buildMenuItem("Account", Icons.account_box, () => Account()),
+            ],
+          ),
+        ],
+      ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('Device')
+            .orderBy('Created At', descending: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) return const Center(child: Text("Error loading devices"));
+          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
 
-            ),Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Padding(padding: EdgeInsetsDirectional.fromSTEB(50, 20, 0, 0),
-                child:
-                SizedBox(
-                  width: 130,
-                  height: 130,
-                  child: 
-                ElevatedButton(onPressed: (){
-                  print('...');
-                },
-                style: 
-                ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)
-                  ),
-                  backgroundColor: Color.fromRGBO(107, 143, 113, 1),
-                ),
-                child:
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.home, size: 55, color: Color.fromRGBO(185, 245, 216, 1)),
-                    Text("Household\nmanagement", 
-                    textAlign: TextAlign.center,
-                    style: 
-                    TextStyle(
-                      fontSize: 13,
-                      color: Color.fromRGBO(185, 245, 216, 1)
-                    ),)
-                  ],
-                )
-                )
-                ),
-                ),
-                Padding(padding: EdgeInsetsDirectional.fromSTEB(0, 20, 50, 0),
-                child:
-                SizedBox(
-                  width: 130,
-                  height: 130,
-                  child: 
-                ElevatedButton(
-                  onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EditDeviceScreen(device: device),
+          final docs = snapshot.data!.docs;
+          if (docs.isEmpty) return const Center(child: Text("No devices added yet"));
+
+          return ListView.builder(
+            itemCount: docs.length,
+            itemBuilder: (context, index) {
+              final device = docs[index];
+              final deviceData = device.data() as Map<String, dynamic>;
+
+              final name = deviceData['Name'] ?? 'Unnamed';
+              final location = deviceData['Location'] ?? 'No location';
+
+              return ListTile(
+                title: Text(name),
+                subtitle: Text("Location: $location"),
+                trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => DevicesScreen(),
                     ),
                   );
                 },
-                style:
-                ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)
-                  ),
-                  backgroundColor: Color.fromRGBO(107, 143, 113, 1),
-                ),
-                child:
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.settings, size: 55, color: Color.fromRGBO(185, 245, 216, 1)),
-                    Text("Settings", 
-                    style: 
-                    TextStyle(
-                      color: Color.fromRGBO(185, 245, 216, 1)
-                    ),)
-                  ],
-                )
-                )
-                ),
-                ),
-              ]
+              );
+            },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => DevicesScreen()),
+          );
+        },
+        backgroundColor: const Color.fromARGB(255, 150, 185, 164),
+        child: const Icon(Icons.add, color: Color.fromRGBO(185, 245, 216, 1)),
+      ),
+    );
+  }
 
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Padding(padding: EdgeInsetsDirectional.fromSTEB(60, 20, 0, 0),
-                child:
-                SizedBox(
-                  width: 130,
-                  height: 130,
-                  child: 
-                ElevatedButton(onPressed: (){
-                  print('...');
-                },
-                style: 
-                ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)
-                  ),
-                  backgroundColor: Color.fromRGBO(107, 143, 113, 1),
-                ),
-                child:
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.lock, size: 55, color: Color.fromRGBO(185, 245, 216, 1)),
-                    Text("Security", 
-                    style: 
-                    TextStyle(
-                      color: Color.fromRGBO(185, 245, 216, 1)
-                    ),)
-                  ],
-                )
-                )
-                ),
-                ),
-              ]
-            )
-          ]
-        )
-      )
-      )
-      );
+  PopupMenuItem _buildMenuItem(String title, IconData icon, Widget Function() page) {
+    return PopupMenuItem(
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.white),
+          const SizedBox(width: 8),
+          Text(title, style: const TextStyle(color: Colors.white)),
+        ],
+      ),
+      onTap: () => Future.delayed(Duration.zero, () {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => page()));
+      }),
+    );
   }
 }

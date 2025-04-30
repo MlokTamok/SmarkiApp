@@ -1,0 +1,302 @@
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+class AddDeviceFlowScreen extends StatefulWidget {
+  const AddDeviceFlowScreen({Key? key}) : super(key: key);
+
+  @override
+  State<AddDeviceFlowScreen> createState() => _AddDeviceFlowScreenState();
+}
+
+class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  final TextEditingController _codeController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
+  final TextEditingController _townController = TextEditingController();
+  final TextEditingController _streetController = TextEditingController();
+  final TextEditingController _housenController = TextEditingController();
+  final TextEditingController _floorController = TextEditingController();
+
+  String? _selectedDeviceVersion;
+  final List<String> _deviceVersions = ['SMARKI DK 90', 'SMARKI DK 60', 'SMARKI DS 90'];
+
+  bool isCodeEntered = false;
+  String scannedCode = '';
+  String? documentId;
+
+  Future<void> _saveCode() async {
+    final code = _codeController.text.trim();
+    final user = _auth.currentUser;
+
+    if (code.isEmpty || user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a code and make sure you are logged in.')),
+      );
+      return;
+    }
+
+    try {
+      final docRef = await _firestore.collection('Device').add({
+        'code': code,
+        'user_id': user.uid,
+        'user_email': user.email,
+        'Name': '',
+        'Device Version': '',
+        'Location': '',
+        'Town': '',
+        'Street': '',
+        'House Number': '',
+        'Floor': '',
+        'created_at': FieldValue.serverTimestamp(),
+      });
+
+      setState(() {
+        scannedCode = code;
+        isCodeEntered = true;
+        documentId = docRef.id;
+      });
+
+      final snapshot = await docRef.get();
+      final data = snapshot.data();
+      if (data != null) {
+        _nameController.text = data['Name'] ?? '';
+        _selectedDeviceVersion = data['Device Version'] ?? null;
+        _locationController.text = data['Location'] ?? '';
+        _townController.text = data['Town'] ?? '';
+        _streetController.text = data['Street'] ?? '';
+        _housenController.text = data['House Number'] ?? '';
+        _floorController.text = data['Floor'] ?? '';
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to save code: $e')),
+      );
+    }
+  }
+
+  Future<void> _saveDeviceDetails() async {
+    if (_formKey.currentState!.validate()) {
+      final name = _nameController.text.trim();
+      final location = _locationController.text.trim();
+      final town = _townController.text.trim();
+      final street = _streetController.text.trim();
+      final house_n = _housenController.text.trim();
+      final floor = _floorController.text.trim();
+      final user = _auth.currentUser;
+
+      if (name.isEmpty || _selectedDeviceVersion == null || location.isEmpty || town.isEmpty || street.isEmpty || house_n.isEmpty || user == null || documentId == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please fill in all fields')),
+        );
+        return;
+      }
+
+      try {
+        await _firestore.collection('Device').doc(documentId).update({
+          'Name': name,
+          'Device Version': _selectedDeviceVersion,
+          'Location': location,
+          'Town': town,
+          'Street': street,
+          'House Number': house_n,
+          'Floor': floor,
+          'updated_at': FieldValue.serverTimestamp(),
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Device added successfully!')),
+        );
+        Navigator.pop(context);
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update device: $e')),
+        );
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _codeController.dispose();
+    _nameController.dispose();
+    _locationController.dispose();
+    _townController.dispose();
+    _streetController.dispose();
+    _housenController.dispose();
+    _floorController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        
+        backgroundColor: const Color(0xFFAAD2BA),
+        title: const Text("Add Device",
+          style: TextStyle(
+            color: Color.fromRGBO(63, 80, 66, 1), 
+            fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: isCodeEntered
+            ? _buildDeviceForm()
+            : _buildCodeInput(),
+      ),
+    );
+  }
+
+  Widget _buildCodeInput() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        TextField(
+          controller: _codeController,
+          decoration: InputDecoration(
+            labelText: 'Code',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(18),
+              borderSide: BorderSide.none,
+            ),
+            fillColor: Color.fromRGBO(107, 143, 113, 0.1),
+            filled: true,
+            prefixIcon: Icon(Icons.qr_code_scanner),
+          ),
+        ),
+        SizedBox(height: 10),
+        ElevatedButton(
+          onPressed: _saveCode,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Color.fromRGBO(107, 143, 113, 1),
+            shape: StadiumBorder(),
+          ),
+          child: const Text("Next",
+              style: TextStyle(
+                color: Color.fromRGBO(185, 245, 216, 1),
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDeviceForm() {
+    return Form(
+      key: _formKey,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Text('Code: $scannedCode', style: TextStyle(fontSize: 18)),
+            SizedBox(height: 20),
+            TextFormField(
+              controller: _nameController,
+              decoration: const InputDecoration(labelText: 'Device Name'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Device Name is required';
+                }
+                return null;
+              },
+            ),
+            SizedBox(height: 10),
+            DropdownButtonFormField<String>(
+              value: _selectedDeviceVersion,
+              decoration: const InputDecoration(labelText: 'Select Device Version'),
+              items: _deviceVersions.map((version) {
+                return DropdownMenuItem(
+                  value: version,
+                  child: Text(version),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  _selectedDeviceVersion = value;
+                });
+              },
+              validator: (value) {
+                if (value == null) {
+                  return 'Device version is required';
+                }
+                return null;
+              },
+            ),
+            SizedBox(height: 10),
+            TextFormField(
+              controller: _locationController,
+              decoration: const InputDecoration(labelText: 'Device Location'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Location is required';
+                }
+                return null;
+              },
+            ),
+            SizedBox(height: 10),
+            TextFormField(
+              controller: _townController,
+              decoration: const InputDecoration(labelText: 'Town'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Town is required';
+                }
+                return null;
+              },
+            ),
+            SizedBox(height: 10),
+            TextFormField(
+              controller: _streetController,
+              decoration: const InputDecoration(labelText: 'Street'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Street is required';
+                }
+                return null;
+              },
+            ),
+            SizedBox(height: 10),
+            TextFormField(
+              controller: _housenController,
+              decoration: const InputDecoration(labelText: 'House Number'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'House Number is required';
+                }
+                return null;
+              },
+            ),
+            SizedBox(height: 10),
+            TextFormField(
+              controller: _floorController,
+              decoration: const InputDecoration(labelText: 'Floor'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _saveDeviceDetails,
+              style: ElevatedButton.styleFrom(
+              backgroundColor: Color.fromRGBO(107, 143, 113, 1),
+              shape: StadiumBorder(),
+              ),
+              child: const Text("Save Device",
+              style: TextStyle(
+                color: Color.fromRGBO(185, 245, 216, 1),
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

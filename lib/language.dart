@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:smarkiapp2/CZ/language_cz.dart';
 import 'package:smarkiapp2/account.dart';
 import 'package:flag/flag.dart';
+import 'package:smarkiapp2/deices.dart';
 
 class Language extends StatelessWidget {
   @override
@@ -9,8 +9,9 @@ class Language extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_rounded, color: Color.fromRGBO(63, 80, 66, 1)),
-          onPressed: () => Navigator.pop(context), // Fixed
+          icon: Icon(Icons.arrow_back_ios_rounded,
+          color: Color.fromRGBO(63, 80, 66, 1)),
+          onPressed: () => Navigator.pop(context),
         ),
         backgroundColor: const Color(0xFFAAD2BA),
         title: Text(
@@ -92,7 +93,7 @@ class Language extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => CZLanguage()),
+                        MaterialPageRoute(builder: (context) => DevicesScreen()),
                       );
                     },
                     style: ElevatedButton.styleFrom(

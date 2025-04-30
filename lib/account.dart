@@ -28,15 +28,11 @@ class Account extends StatelessWidget {
       ),
       home: Scaffold(
         appBar: AppBar(
-          leading: Builder(
-            builder: (BuildContext context) {
-              return IconButton(
-                onPressed: () => Navigator.pop(context), // Fixed
+          leading: IconButton(
                 icon: Icon(Icons.arrow_back_ios_new_rounded),
                 color: Color.fromRGBO(63, 80, 66, 1),
-              );
-            },
-          ),
+                onPressed: () => Navigator.pop(context),
+              ),
           backgroundColor: const Color(0xFFAAD2BA),
           title: Text(
             "Account Settings",
