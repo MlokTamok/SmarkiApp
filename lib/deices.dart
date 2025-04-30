@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:smarkiapp2/account.dart';
-import 'package:smarkiapp2/editdevice.dart';
+import 'package:smarkiapp2/devicemenu.dart';
 import 'package:smarkiapp2/language.dart';
 import 'package:smarkiapp2/scanner.dart';
 
@@ -23,6 +23,9 @@ class _DevicesScreenState extends State<DevicesScreen> {
         body: Center(child: Text("Please log in to view your devices")),
       );
     }
+
+    final userEmail = currentUser.email?.trim().toLowerCase();
+    print("🧪 Logged in as: $userEmail");
 
     return Scaffold(
       appBar: AppBar(
@@ -50,47 +53,71 @@ class _DevicesScreenState extends State<DevicesScreen> {
           ),
         ],
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('Device')
-            .where('user_email', isEqualTo: currentUser.email) // 🔥 FILTER BY EMAIL
-            .orderBy('Created At', descending: true)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) return const Center(child: Text("Error loading devices"));
-          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
-
-          final docs = snapshot.data!.docs;
-          if (docs.isEmpty) return const Center(child: Text("No devices added yet"));
-
-          return ListView.builder(
-            itemCount: docs.length,
-            itemBuilder: (context, index) {
-              final device = docs[index];
-              final deviceData = device.data() as Map<String, dynamic>;
-
-              final name = deviceData['Name'] ?? 'Unnamed';
-              final location = deviceData['Location'] ?? 'No location';
-
-              return ListTile(
-                title: Text(name),
-                subtitle: Text("Location: $location"),
-                trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => EditDeviceScreen(
-                        deviceId: device.id,
-                        deviceData: deviceData,
-                      ),
-                    ),
-                  );
-                },
-              );
-            },
-          );
+      body: RefreshIndicator(
+        onRefresh: () async {
+          setState(() {});
         },
+        child: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('Device')
+              .where('user_email', isEqualTo: userEmail)
+              .orderBy('created_at', descending: true)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              print("❌ Firestore error: ${snapshot.error}");
+              return const Center(child: Text("Error loading devices"));
+            }
+
+            if (!snapshot.hasData) {
+              print("⏳ Waiting for data...");
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            final docs = snapshot.data!.docs;
+            print("📦 Firestore returned ${docs.length} devices");
+
+            if (docs.isEmpty) {
+              return const Center(child: Text("No devices found for this user"));
+            }
+
+            return ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
+              itemCount: docs.length,
+              itemBuilder: (context, index) {
+                final device = docs[index];
+                final data = device.data() as Map<String, dynamic>;
+
+                final name = data['Name'] ?? 'Unnamed';
+                final location = data['Location'] ?? 'No location';
+
+                return ListTile(
+                  title: Text(name),
+                  subtitle: Text("Location: $location"),
+                  trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => DeviceMenu(
+                          device: {
+                            'id': device.id,
+                            'name': name,
+                            'Location': data['Location'],
+                            'Town': data['Town'],
+                            'Street': data['Street'],
+                            'House Number': data['House Number'],
+                            'Floor': data['Floor'],
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -98,6 +125,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
             context,
             MaterialPageRoute(builder: (_) => AddDeviceFlowScreen()),
           );
+          setState(() {}); // Refresh after adding a device
         },
         backgroundColor: const Color.fromARGB(255, 150, 185, 164),
         child: const Icon(Icons.add, color: Color.fromRGBO(185, 245, 216, 1)),

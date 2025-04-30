@@ -55,9 +55,51 @@ class _EditDeviceScreenState extends State<EditDeviceScreen> {
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Device updated successfully!')),
+      const SnackBar(content: Text('Device updated successfully!')),
     );
     Navigator.pop(context); // Go back to device list
+  }
+
+  Future<void> deleteDevice() async {
+    bool shouldDelete = await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Device'),
+        content: const Text('Are you sure you want to delete this device? This action cannot be undone.'),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop(false);
+            },
+          ),
+          TextButton(
+            child: const Text('Delete'),
+            onPressed: () {
+              Navigator.of(context).pop(true);
+            },
+          ),
+        ],
+      ),
+    ) ?? false;
+
+    if (shouldDelete) {
+      try {
+        await FirebaseFirestore.instance
+            .collection('Device')
+            .doc(widget.deviceId)
+            .delete();
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Device deleted successfully!')),
+        );
+        Navigator.pop(context); // Go back to device list
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error deleting device: $e')),
+        );
+      }
+    }
   }
 
   @override
@@ -90,6 +132,17 @@ class _EditDeviceScreenState extends State<EditDeviceScreen> {
               child: const Text(
                 'Save Changes',
                 style: TextStyle(color: Color.fromRGBO(63, 80, 66, 1), fontWeight: FontWeight.bold),
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 247, 65, 65),
+              ),
+              onPressed: deleteDevice,
+              child: const Text(
+                'Delete Device',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ),
           ],

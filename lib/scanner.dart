@@ -111,6 +111,7 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Device added successfully!')),
         );
+        documentId = null; // prevent deletion on pop after save
         Navigator.pop(context);
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -118,6 +119,17 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
         );
       }
     }
+  }
+
+  Future<bool> _onWillPop() async {
+    if (isCodeEntered && documentId != null) {
+      try {
+        await _firestore.collection('Device').doc(documentId).delete();
+      } catch (e) {
+        // You could log this error if needed
+      }
+    }
+    return true;
   }
 
   @override
@@ -134,22 +146,31 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        
-        backgroundColor: const Color(0xFFAAD2BA),
-        title: const Text("Add Device",
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: const Color(0xFFAAD2BA),
+          title: const Text(
+            "Add Device",
           style: TextStyle(
-            color: Color.fromRGBO(63, 80, 66, 1), 
-            fontWeight: FontWeight.bold),
+            color: Color.fromRGBO(63, 80, 66, 1),
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
+        leading: IconButton(
+        icon: Icon(Icons.arrow_back_ios_new_rounded),
+        color: Color.fromRGBO(63, 80, 66, 1),
+        onPressed: () => Navigator.pop(context),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: isCodeEntered
-            ? _buildDeviceForm()
-            : _buildCodeInput(),
+    ),
+        body: Padding(
+          padding: const EdgeInsets.all(16),
+          child: isCodeEntered
+              ? _buildDeviceForm()
+              : _buildCodeInput(),
+        ),
       ),
     );
   }
@@ -283,16 +304,16 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
             ElevatedButton(
               onPressed: _saveDeviceDetails,
               style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromRGBO(107, 143, 113, 1),
-              shape: StadiumBorder(),
+                backgroundColor: Color.fromRGBO(107, 143, 113, 1),
+                shape: StadiumBorder(),
               ),
               child: const Text("Save Device",
-              style: TextStyle(
-                color: Color.fromRGBO(185, 245, 216, 1),
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+                style: TextStyle(
+                  color: Color.fromRGBO(185, 245, 216, 1),
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
             ),
           ],
         ),

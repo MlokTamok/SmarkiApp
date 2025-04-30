@@ -1,105 +1,162 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:smarkiapp2/account.dart';
-import 'package:smarkiapp2/language.dart';
+import 'package:smarkiapp2/editdevice.dart';
+import 'package:smarkiapp2/sterilizace.dart';
 
-class DevicesScreen extends StatefulWidget {
-  @override
-  _DevicesScreenState createState() => _DevicesScreenState();
-}
+class DeviceMenu extends StatelessWidget {
+  final Map<String, dynamic> device;
 
-class _DevicesScreenState extends State<DevicesScreen> {
+  DeviceMenu({required this.device});
+
   @override
   Widget build(BuildContext context) {
+    final deviceId = device['id'];
+    final deviceData = {
+      'Name': device['name'],
+      'Location': device['Location'],
+      'Town': device['Town'],
+      'Street': device['Street'],
+      'House Number': device['House Number'],
+      'Floor': device['Floor'],
+    };
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFFAAD2BA),
-        title: const Text(
-          "Your Devices",
+        backgroundColor: Color(0xFFAAD2BA),
+        title: Text(
+          device['name'] ?? 'Device Menu',
           style: TextStyle(
-              color: Color.fromRGBO(63, 80, 66, 1), fontWeight: FontWeight.bold),
+            color: const Color.fromRGBO(63, 80, 66, 1),
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
-        actions: [
-          PopupMenuButton(
-            color: const Color.fromRGBO(107, 143, 113, 1),
-            icon: const Icon(Icons.menu_rounded, color: Color.fromRGBO(63, 80, 66, 1)),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-              side: const BorderSide(color: Colors.grey),
-            ),
-            itemBuilder: (context) => [
-              _buildMenuItem("Language", Icons.language, () => Language()),
-              _buildMenuItem("Country", Icons.public, () => Language()),
-              _buildMenuItem("Time Zone", Icons.access_time, () => Language()),
-              _buildMenuItem("Account", Icons.account_box, () => Account()),
-            ],
-          ),
-        ],
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios_rounded, color: Color.fromRGBO(63, 80, 66, 1)),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('Device')
-            .orderBy('Created At', descending: true)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) return const Center(child: Text("Error loading devices"));
-          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
-
-          final docs = snapshot.data!.docs;
-          if (docs.isEmpty) return const Center(child: Text("No devices added yet"));
-
-          return ListView.builder(
-            itemCount: docs.length,
-            itemBuilder: (context, index) {
-              final device = docs[index];
-              final deviceData = device.data() as Map<String, dynamic>;
-
-              final name = deviceData['Name'] ?? 'Unnamed';
-              final location = deviceData['Location'] ?? 'No location';
-
-              return ListTile(
-                title: Text(name),
-                subtitle: Text("Location: $location"),
-                trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => DevicesScreen(),
+      body: Padding(
+        padding: const EdgeInsets.all(30.0),
+        child: GridView.count(
+          crossAxisCount: 2,  // Adjust the number of columns here
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+          padding: const EdgeInsets.all(10),
+          children: [
+            buildMenuButton(
+              icon1: Icons.lightbulb,
+              icon2: Icons.air,
+              text: 'Lighting\n& Extraction',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Sterilizace(
+                      deviceId: deviceId,
+                      deviceData: deviceData,
                     ),
-                  );
-                },
-              );
-            },
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => DevicesScreen()),
-          );
-        },
-        backgroundColor: const Color.fromARGB(255, 150, 185, 164),
-        child: const Icon(Icons.add, color: Color.fromRGBO(185, 245, 216, 1)),
+                  ),
+                );
+              },
+            ),
+            buildMenuButton(
+              icon: Icons.light,
+              text: 'Sterilization',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Sterilizace(
+                      deviceId: deviceId,
+                      deviceData: deviceData,
+                    ),
+                  ),
+                );
+              },
+            ),
+            buildMenuButton(
+              icon: Icons.soup_kitchen,
+              text: 'Cooking',
+              onPressed: () {
+                print('Cooking tapped: $deviceId');
+              },
+            ),
+            buildMenuButton(
+              icon: Icons.video_file,
+              text: 'Audio\n& Video',
+              onPressed: () {
+                print('Audio & Video tapped: $deviceId');
+              },
+            ),
+            buildMenuButton(
+              icon: Icons.home,
+              text: 'Household\nmanagement',
+              onPressed: () {
+                print('Household tapped: $deviceId');
+              },
+            ),
+            buildMenuButton(
+              icon: Icons.settings,
+              text: 'Settings',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditDeviceScreen(
+                      deviceId: deviceId,
+                      deviceData: deviceData,
+                    ),
+                  ),
+                );
+              },
+            ),
+            buildMenuButton(
+              icon: Icons.lock,
+              text: 'Security',
+              onPressed: () {
+                print('Security tapped: $deviceId');
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  PopupMenuItem _buildMenuItem(String title, IconData icon, Widget Function() page) {
-    return PopupMenuItem(
-      child: Row(
+  Widget buildMenuButton({
+    IconData? icon,
+    IconData? icon1,
+    IconData? icon2,
+    required String text,
+    required VoidCallback onPressed,
+  }) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        backgroundColor: Color.fromRGBO(107, 143, 113, 1),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: Colors.white),
-          const SizedBox(width: 8),
-          Text(title, style: const TextStyle(color: Colors.white)),
+          if (icon != null)
+            Icon(icon, size: 55, color: Color.fromRGBO(185, 245, 216, 1)),
+          if (icon1 != null && icon2 != null)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon1, size: 40, color: Color.fromRGBO(185, 245, 216, 1)),
+                Icon(icon2, size: 37, color: Color.fromRGBO(185, 245, 216, 1)),
+              ],
+            ),
+          const SizedBox(height: 5),
+          Text(
+            text,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Color.fromRGBO(185, 245, 216, 1)),
+          ),
         ],
       ),
-      onTap: () => Future.delayed(Duration.zero, () {
-        Navigator.push(context, MaterialPageRoute(builder: (_) => page()));
-      }),
     );
   }
 }

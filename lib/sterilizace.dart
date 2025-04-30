@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:smarkiapp2/account.dart';
 import 'package:smarkiapp2/language.dart';
-//import 'package:wheel_picker/wheel_picker.dart';
-
 
 class Sterilizace extends StatefulWidget {
-  final Map<String, String> device;
-  const Sterilizace({Key? key, required this.device}) : super(key: key);
+  final String deviceId;
+  final Map<String, dynamic> deviceData;
+
+  const Sterilizace({
+    Key? key,
+    required this.deviceId,
+    required this.deviceData,
+  }) : super(key: key);
 
   @override
   _SterilizaceState createState() => _SterilizaceState();
@@ -36,9 +40,7 @@ class _SterilizaceState extends State<Sterilizace> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context, widget.device);
-          },
+          onPressed: () => Navigator.pop(context),
           icon: Icon(Icons.arrow_back_ios_rounded),
           color: Color.fromRGBO(63, 80, 66, 1),
         ),
@@ -128,9 +130,6 @@ class _SterilizaceState extends State<Sterilizace> {
     );
   }
 
-  
-  
-
   Widget _buildPopupMenu() {
     return PopupMenuButton<String>(
       color: Color.fromRGBO(107, 143, 113, 1),
@@ -141,15 +140,9 @@ class _SterilizaceState extends State<Sterilizace> {
       ),
       onSelected: (String value) {
         if (value == 'account') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => Account()),
-          );
+          Navigator.push(context, MaterialPageRoute(builder: (context) => Account()));
         } else {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => Language()),
-          );
+          Navigator.push(context, MaterialPageRoute(builder: (context) => Language()));
         }
       },
       itemBuilder: (context) => [
@@ -173,6 +166,4 @@ class _SterilizaceState extends State<Sterilizace> {
       ),
     );
   }
-  
 }
-
