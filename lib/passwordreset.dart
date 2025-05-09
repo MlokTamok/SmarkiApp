@@ -61,7 +61,7 @@ class ResetPassword extends StatelessWidget {
     return Column(
       children: [
         Text(
-          'Resetting password for:\n${user!.email}', // Header
+          'Resetting password for:\n${user!.email}',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -71,7 +71,7 @@ class ResetPassword extends StatelessWidget {
         Text(
           "Click the button below to reset your password.",
           style: TextStyle(color: Color.fromRGBO(63, 80, 66, 1)),
-        ), // Subtitle
+        ),
       ],
     );
   }

@@ -13,8 +13,8 @@ class Account extends StatelessWidget {
   await FirebaseAuth.instance.signOut();
   Navigator.pushAndRemoveUntil(
     context,
-    MaterialPageRoute(builder: (context) => const Warpper()), // Redirect to the Warpper
-    (route) => false, // Remove all previous routes
+    MaterialPageRoute(builder: (context) => const Warpper()),
+    (route) => false, 
   );
 }
 

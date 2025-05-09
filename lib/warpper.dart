@@ -22,16 +22,16 @@ class _WarpperState extends State<Warpper> {
             if (snapshot.hasData) {
               final user = snapshot.data;
               if (user != null && user.emailVerified) {
-                return DevicesScreen(); // User verified
+                return DevicesScreen();
               } else {
-                return Verify(); // User not verified
+                return Verify(); 
               }
             } else {
-              return LoginPage(); // Not logged in
+              return LoginPage(); 
             }
           } else {
             return Center(
-              child: CircularProgressIndicator(), // While checking auth state
+              child: CircularProgressIndicator(),
             );
           }
         },

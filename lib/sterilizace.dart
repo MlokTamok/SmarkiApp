@@ -1,6 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:smarkiapp2/account.dart';
-import 'package:smarkiapp2/language.dart';
 
 class Sterilizace extends StatefulWidget {
   final String deviceId;
@@ -17,67 +16,118 @@ class Sterilizace extends StatefulWidget {
 }
 
 class _SterilizaceState extends State<Sterilizace> {
-  double _currentValue = 60;
+  double _StartcurrentValue = 2;
+  double _TimecurrentValue = 60;
   bool _switchValue1 = false;
   bool _switchValue2 = false;
+  bool _switchValue3 = false;
+  bool _switchValue4 = false;
+  bool _switchValue5 = false;
+  TimeOfDay _selectedTime = TimeOfDay(hour: 0, minute: 0); 
+  int _days = 0;
 
-  void _updateSwitchValue1(bool value) {
-    setState(() {
-      _switchValue1 = value;
-      if (value) _switchValue2 = false;
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  void _loadData() {
+    FirebaseFirestore.instance
+        .collection('devices')
+        .doc(widget.deviceId)
+        .get()
+        .then((docSnapshot) {
+      if (docSnapshot.exists) {
+        setState(() {
+          final data = docSnapshot.data() as Map<String, dynamic>;
+          _switchValue1 = data['switchValue1'] ?? false;
+          _switchValue2 = data['switchValue2'] ?? false;
+          _switchValue3 = data['switchValue3'] ?? false;
+          _switchValue4 = data['switchValue4'] ?? false;
+          _switchValue5 = data['switchValue5'] ?? false;
+          _StartcurrentValue = data['StartcurrentValue'] ?? 2;
+          _TimecurrentValue = data['TimecurrentValue'] ?? 60;
+          _selectedTime = TimeOfDay(
+            hour: data['selectedTimeHour'] ?? 0,
+            minute: data['selectedTimeMinute'] ?? 0,
+          );
+          _days = data['days'] ?? 0;
+        });
+      }
+    }).catchError((e) {
+      print("Error loading data: $e");
     });
   }
+
+  void _saveData() {
+    FirebaseFirestore.instance.collection('devices').doc(widget.deviceId).set({
+      'switchValue1': _switchValue1,
+      'switchValue2': _switchValue2,
+      'switchValue3': _switchValue3,
+      'switchValue4': _switchValue4,
+      'switchValue5': _switchValue5,
+      'StartcurrentValue': _StartcurrentValue,
+      'TimecurrentValue': _TimecurrentValue,
+      'selectedTimeHour': _selectedTime.hour,
+      'selectedTimeMinute': _selectedTime.minute,
+      'days': _days,
+    }).then((_) {
+      
+    }).catchError((e) {
+      print("Error saving data: $e");
+    });
+  }
+
+  void _updateSwitchValue1(bool value) {
+  setState(() {
+    _switchValue1 = value;
+    if (value) _switchValue2 = false;
+  });
+  _saveData();
+}
+
 
   void _updateSwitchValue2(bool value) {
     setState(() {
       _switchValue2 = value;
       if (value) _switchValue1 = false;
     });
+    _saveData();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: Icon(Icons.arrow_back_ios_rounded),
-          color: Color.fromRGBO(63, 80, 66, 1),
-        ),
-        backgroundColor: Color(0xFFAAD2BA),
-        title: Text(
-          "Sterilisation of the room",
-          style: TextStyle(
-            color: Color.fromRGBO(63, 80, 66, 1),
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-        actions: [_buildPopupMenu()],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            _buildSwitchRow("Ozone Sterilisation", _switchValue1, _updateSwitchValue1),
-            _buildSwitchRow("UV Sterilisation", _switchValue2, _updateSwitchValue2),
-            SizedBox(height: 20),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Time setting in minutes or\naccording to the size of the room',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  color: Color.fromRGBO(63, 80, 66, 1),
-                ),
-              ),
-            ),
-            _buildSlider(),
-          ],
-        ),
-      ),
+  void _updateSwitchValue3(bool value) {
+    setState(() {
+      _switchValue3 = value;
+    });
+    _saveData();
+  }
+
+  void _updateSwitchValue4(bool value) {
+    setState(() {
+      _switchValue4 = value;
+    });
+    _saveData();
+  }
+
+  void _updateSwitchValue5(bool value) {
+    setState(() {
+      _switchValue5 = value;
+    });
+    _saveData();
+  }
+
+  Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: _selectedTime,
     );
+    if (picked != null && picked != _selectedTime) {
+      setState(() {
+        _selectedTime = picked;
+      });
+      _saveData();
+    }
   }
 
   Widget _buildSwitchRow(String title, bool value, Function(bool) onChanged) {
@@ -101,21 +151,22 @@ class _SterilizaceState extends State<Sterilizace> {
     );
   }
 
-  Widget _buildSlider() {
+  Widget _buildSliderTime() {
     return Column(
       children: [
         Slider(
           min: 30,
           max: 150,
           divisions: 4,
-          label: '${_currentValue.toInt()} minutes',
+          label: '${_TimecurrentValue.toInt()} minutes',
           activeColor: Color.fromRGBO(107, 143, 113, 1),
           inactiveColor: Color.fromRGBO(185, 245, 216, 1),
-          value: _currentValue,
+          value: _TimecurrentValue,
           onChanged: (value) {
             setState(() {
-              _currentValue = value;
+              _TimecurrentValue = value;
             });
+            _saveData();
           },
         ),
         Row(
@@ -130,39 +181,149 @@ class _SterilizaceState extends State<Sterilizace> {
     );
   }
 
-  Widget _buildPopupMenu() {
-    return PopupMenuButton<String>(
-      color: Color.fromRGBO(107, 143, 113, 1),
-      icon: Icon(Icons.menu_rounded, color: Color.fromRGBO(63, 80, 66, 1)),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-        side: BorderSide(color: Colors.grey),
-      ),
-      onSelected: (String value) {
-        if (value == 'account') {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => Account()));
-        } else {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => Language()));
-        }
-      },
-      itemBuilder: (context) => [
-        _buildMenuItem("Language", Icons.language, 'language'),
-        _buildMenuItem("Country", Icons.public, 'country'),
-        _buildMenuItem("Time Zone", Icons.access_time, 'timezone'),
-        _buildMenuItem("Account", Icons.account_box, 'account'),
+  Widget _buildSliderStart() {
+    return Column(
+      children: [
+        Slider(
+          min: 1,
+          max: 5,
+          divisions: 4,
+          label: '${_StartcurrentValue.toInt()}',
+          activeColor: _switchValue3
+              ? Color.fromRGBO(107, 143, 113, 1)
+              : Color.fromRGBO(185, 245, 216, 1),
+          inactiveColor: Color.fromRGBO(185, 245, 216, 1),
+          value: _StartcurrentValue,
+          onChanged: _switchValue3
+              ? (value) {
+                  setState(() {
+                    _StartcurrentValue = value;
+                  });
+                  _saveData();
+                }
+              : null,
+        ),
       ],
     );
   }
 
-  PopupMenuItem<String> _buildMenuItem(String title, IconData icon, String value) {
-    return PopupMenuItem<String>(
-      value: value,
-      child: Row(
-        children: [
-          Icon(icon, color: Colors.white),
-          SizedBox(width: 10),
-          Text(title, style: TextStyle(color: Colors.white)),
-        ],
+  Widget _buildDayCounter() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SizedBox(height: 10),
+        Center(
+          child: Text(
+            'Repeat every (days):',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: Color.fromRGBO(63, 80, 66, 1),
+            ),
+          ),
+        ),
+        SizedBox(height: 10),
+        Center(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: Icon(Icons.remove_circle, color: Colors.red),
+                onPressed: _days > 0
+                    ? () => setState(() {
+                      _days--;
+                      _saveData();
+                    })
+                : null,
+              ),
+              Text('$_days', style: TextStyle(fontSize: 20)),
+              IconButton(
+                icon: Icon(Icons.add_circle, color: Colors.green),
+                onPressed: _days > 0
+                    ? () => setState(() {
+                      _days++;
+                      _saveData();
+                    })
+                : null,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back_ios_rounded),
+          color: Color.fromRGBO(63, 80, 66, 1),
+        ),
+        backgroundColor: Color(0xFFAAD2BA),
+        title: Text(
+          "Sterilisation of the room",
+          style: TextStyle(
+            color: Color.fromRGBO(63, 80, 66, 1),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              _buildSwitchRow("Ozone Sterilisation", _switchValue1, _updateSwitchValue1),
+              _buildSwitchRow("UV Sterilisation", _switchValue2, _updateSwitchValue2),
+              SizedBox(height: 20),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Select Sterilisation Duration\nin minutes or according\nto the size of the room',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Color.fromRGBO(63, 80, 66, 1),
+                  ),
+                ),
+              ),
+              _buildSliderTime(),
+              SizedBox(height: 20),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Start of the Sterilisation:',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Color.fromRGBO(63, 80, 66, 1),
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+              _buildSwitchRow("After leaving in minutes", _switchValue3, _updateSwitchValue3),
+              _buildSliderStart(),
+              _buildSwitchRow("Sterilization start time setting", _switchValue4, _updateSwitchValue4),
+              ElevatedButton(
+                onPressed: _switchValue4 ? () => _selectTime(context) : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromRGBO(107, 143, 113, 1),
+                  disabledBackgroundColor: Color.fromRGBO(185, 245, 216, 1),
+                ),
+                child: Text(
+                  'Select Time: ${_selectedTime.format(context)}',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              _buildSwitchRow("Repetition of sterilisation in days", _switchValue5, _updateSwitchValue5),
+              if (_switchValue5) _buildDayCounter(),
+            ],
+          ),
+        ),
       ),
     );
   }

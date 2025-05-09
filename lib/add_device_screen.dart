@@ -26,7 +26,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
         await FirebaseFirestore.instance.collection('Device').add({
           'user_id': currentUser.uid,
           'user_email': currentUser.email,
-          'code': widget.scannedCode,  // The scanned code
+          'code': widget.scannedCode, 
           'Name': name,
           'Location': location,
           'created_at': FieldValue.serverTimestamp(),

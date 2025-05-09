@@ -39,7 +39,7 @@ class Language extends StatelessWidget {
                     Text("Language", style: TextStyle(color: Colors.white)),
                   ],
                 ),
-                onTap: () => Navigator.pop(context), // Just closes the menu
+                onTap: () => Navigator.pop(context), 
               ),
               PopupMenuItem(
                 child: Row(

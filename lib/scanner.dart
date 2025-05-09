@@ -111,7 +111,7 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Device added successfully!')),
         );
-        documentId = null; // prevent deletion on pop after save
+        documentId = null; 
         Navigator.pop(context);
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -126,7 +126,6 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
       try {
         await _firestore.collection('Device').doc(documentId).delete();
       } catch (e) {
-        // You could log this error if needed
       }
     }
     return true;
@@ -162,7 +161,12 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
         leading: IconButton(
         icon: Icon(Icons.arrow_back_ios_new_rounded),
         color: Color.fromRGBO(63, 80, 66, 1),
-        onPressed: () => Navigator.pop(context),
+        onPressed: () async{
+          bool shouldPop = await _onWillPop();
+          if (shouldPop) {
+            Navigator.of(context).pop();
+          }
+        }
       ),
     ),
         body: Padding(
@@ -217,11 +221,19 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Text('Code: $scannedCode', style: TextStyle(fontSize: 18)),
+            Text('Code: $scannedCode', style: TextStyle(fontSize: 18, color: Color.fromRGBO(63, 80, 66, 1),)),
             SizedBox(height: 20),
             TextFormField(
               controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Device Name'),
+              decoration: InputDecoration(
+                labelText: 'Device Name',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(18),
+                  borderSide: BorderSide.none,
+                ),
+                fillColor: Color.fromRGBO(107, 143, 113, 0.1),
+                filled: true,
+              ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Device Name is required';
@@ -232,7 +244,15 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
             SizedBox(height: 10),
             DropdownButtonFormField<String>(
               value: _selectedDeviceVersion,
-              decoration: const InputDecoration(labelText: 'Select Device Version'),
+              decoration: InputDecoration(
+                labelText: 'Select Device Version',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(18),
+                  borderSide: BorderSide.none,
+                ),
+                fillColor: Color.fromRGBO(107, 143, 113, 0.1),
+                filled: true,
+              ),
               items: _deviceVersions.map((version) {
                 return DropdownMenuItem(
                   value: version,
@@ -254,7 +274,15 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
             SizedBox(height: 10),
             TextFormField(
               controller: _locationController,
-              decoration: const InputDecoration(labelText: 'Device Location'),
+              decoration: InputDecoration(
+                labelText: 'Device Location',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(18),
+                  borderSide: BorderSide.none,
+                ),
+                fillColor: Color.fromRGBO(107, 143, 113, 0.1),
+                filled: true,
+              ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Location is required';
@@ -265,7 +293,15 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
             SizedBox(height: 10),
             TextFormField(
               controller: _townController,
-              decoration: const InputDecoration(labelText: 'Town'),
+              decoration: InputDecoration(
+                labelText: 'Town',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(18),
+                  borderSide: BorderSide.none,
+                ),
+                fillColor: Color.fromRGBO(107, 143, 113, 0.1),
+                filled: true,
+              ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Town is required';
@@ -276,7 +312,15 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
             SizedBox(height: 10),
             TextFormField(
               controller: _streetController,
-              decoration: const InputDecoration(labelText: 'Street'),
+              decoration: InputDecoration(
+                labelText: 'Street',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(18),
+                  borderSide: BorderSide.none,
+                ),
+                fillColor: Color.fromRGBO(107, 143, 113, 0.1),
+                filled: true,
+              ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Street is required';
@@ -287,7 +331,15 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
             SizedBox(height: 10),
             TextFormField(
               controller: _housenController,
-              decoration: const InputDecoration(labelText: 'House Number'),
+              decoration: InputDecoration(
+                labelText: 'House Number',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(18),
+                  borderSide: BorderSide.none,
+                ),
+                fillColor: Color.fromRGBO(107, 143, 113, 0.1),
+                filled: true,
+              ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'House Number is required';
@@ -298,7 +350,15 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
             SizedBox(height: 10),
             TextFormField(
               controller: _floorController,
-              decoration: const InputDecoration(labelText: 'Floor'),
+              decoration: InputDecoration(
+                labelText: 'Floor',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(18),
+                  borderSide: BorderSide.none,
+                ),
+                fillColor: Color.fromRGBO(107, 143, 113, 0.1),
+                filled: true,
+              ),
             ),
             SizedBox(height: 20),
             ElevatedButton(

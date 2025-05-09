@@ -19,6 +19,7 @@ class DeviceMenu extends StatelessWidget {
       'Floor': device['Floor'],
     };
 
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFFAAD2BA),
@@ -38,7 +39,7 @@ class DeviceMenu extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(30.0),
         child: GridView.count(
-          crossAxisCount: 2,  // Adjust the number of columns here
+          crossAxisCount: 2,
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
           padding: const EdgeInsets.all(10),
@@ -82,7 +83,8 @@ class DeviceMenu extends StatelessWidget {
               },
             ),
             buildMenuButton(
-              icon: Icons.video_file,
+              icon1: Icons.audio_file,
+              icon2: Icons.video_file,
               text: 'Audio\n& Video',
               onPressed: () {
                 print('Audio & Video tapped: $deviceId');

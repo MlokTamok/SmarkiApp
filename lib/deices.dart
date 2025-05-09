@@ -86,10 +86,15 @@ class _DevicesScreenState extends State<DevicesScreen> {
               itemCount: docs.length,
               itemBuilder: (context, index) {
                 final device = docs[index];
-                final data = device.data() as Map<String, dynamic>;
+                final data = device.data() as Map<String, dynamic>? ?? {};
 
-                final name = data['Name'] ?? 'Unnamed';
-                final location = data['Location'] ?? 'No location';
+                final name = data['Name']?.toString().trim().isEmpty ?? true
+                    ? 'Unnamed Device'
+                    : data['Name'];
+
+                final location = data['Location']?.toString().trim().isEmpty ?? true
+                    ? 'No location provided'
+                    : data['Location'];
 
                 return ListTile(
                   title: Text(name),
@@ -125,7 +130,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
             context,
             MaterialPageRoute(builder: (_) => AddDeviceFlowScreen()),
           );
-          setState(() {}); // Refresh after adding a device
+          setState(() {}); 
         },
         backgroundColor: const Color.fromARGB(255, 150, 185, 164),
         child: const Icon(Icons.add, color: Color.fromRGBO(185, 245, 216, 1)),
