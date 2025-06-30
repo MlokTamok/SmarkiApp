@@ -23,7 +23,8 @@ class _SterilizaceState extends State<Sterilizace> {
   bool _switchValue3 = false;
   bool _switchValue4 = false;
   bool _switchValue5 = false;
-  TimeOfDay _selectedTime = TimeOfDay(hour: 0, minute: 0); 
+  bool _START = false;
+  TimeOfDay _selectedTime = TimeOfDay(hour: 12, minute: 0); 
   int _days = 0;
 
   @override
@@ -34,18 +35,19 @@ class _SterilizaceState extends State<Sterilizace> {
 
   void _loadData() {
     FirebaseFirestore.instance
-        .collection('devices')
+        .collection('Sterilisation')
         .doc(widget.deviceId)
         .get()
         .then((docSnapshot) {
       if (docSnapshot.exists) {
         setState(() {
           final data = docSnapshot.data() as Map<String, dynamic>;
-          _switchValue1 = data['switchValue1'] ?? false;
-          _switchValue2 = data['switchValue2'] ?? false;
-          _switchValue3 = data['switchValue3'] ?? false;
-          _switchValue4 = data['switchValue4'] ?? false;
-          _switchValue5 = data['switchValue5'] ?? false;
+          _switchValue1 = data['OzoneSterilisation'] ?? false;
+          _switchValue2 = data['UVSterilisation'] ?? false;
+          _switchValue3 = data['AfterLeaving'] ?? false;
+          _switchValue4 = data['StartTime'] ?? false;
+          _switchValue5 = data['Repeat'] ?? false;
+          _START = data['START'] ?? false;
           _StartcurrentValue = data['StartcurrentValue'] ?? 2;
           _TimecurrentValue = data['TimecurrentValue'] ?? 60;
           _selectedTime = TimeOfDay(
@@ -61,32 +63,30 @@ class _SterilizaceState extends State<Sterilizace> {
   }
 
   void _saveData() {
-    FirebaseFirestore.instance.collection('devices').doc(widget.deviceId).set({
-      'switchValue1': _switchValue1,
-      'switchValue2': _switchValue2,
-      'switchValue3': _switchValue3,
-      'switchValue4': _switchValue4,
-      'switchValue5': _switchValue5,
+    FirebaseFirestore.instance.collection('Sterilisation').doc(widget.deviceId).set({
+      'OzoneSterilisation': _switchValue1,
+      'UVSterilisation': _switchValue2,
+      'AfterLeaving': _switchValue3,
+      'StartTime': _switchValue4,
+      'Repeat': _switchValue5,
+      'START': _START,
       'StartcurrentValue': _StartcurrentValue,
       'TimecurrentValue': _TimecurrentValue,
       'selectedTimeHour': _selectedTime.hour,
       'selectedTimeMinute': _selectedTime.minute,
       'days': _days,
-    }).then((_) {
-      
     }).catchError((e) {
       print("Error saving data: $e");
     });
   }
 
   void _updateSwitchValue1(bool value) {
-  setState(() {
-    _switchValue1 = value;
-    if (value) _switchValue2 = false;
-  });
-  _saveData();
-}
-
+    setState(() {
+      _switchValue1 = value;
+      if (value) _switchValue2 = false;
+    });
+    _saveData();
+  }
 
   void _updateSwitchValue2(bool value) {
     setState(() {
@@ -207,6 +207,56 @@ class _SterilizaceState extends State<Sterilizace> {
     );
   }
 
+  Widget _buildStartButton(String title) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 23,
+            fontWeight: FontWeight.bold,
+            color: Color.fromRGBO(63, 80, 66, 1),
+          ),
+        ),
+        SizedBox(
+  width: 80,
+  height: 65,
+  child: ElevatedButton(
+    onPressed: () {
+      FirebaseFirestore.instance
+        .collection('Sterilisation')
+        .doc(widget.deviceId)
+        .set({'START': true}, SetOptions(merge: true))
+        .then((_) {
+          int minutes = _switchValue3 ? _StartcurrentValue.toInt() : 0;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(
+              minutes > 0
+                ? 'Sterilisation will start in $minutes minutes!'
+                : 'Sterilisation started immediately!',
+            )),
+          );
+        })
+        .catchError((e) {
+          print("Error: $e");
+        });
+    },
+    style: ElevatedButton.styleFrom(
+      shape: const CircleBorder(),
+      backgroundColor: Color.fromRGBO(107, 143, 113, 1),
+    ),
+    child: Text(
+      'Start',
+      style: TextStyle(color: Color.fromRGBO(185, 245, 216, 1)),
+    ),
+  ),
+),
+
+      ],
+    );
+  }
+
   Widget _buildDayCounter() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -231,20 +281,18 @@ class _SterilizaceState extends State<Sterilizace> {
                 icon: Icon(Icons.remove_circle, color: Colors.red),
                 onPressed: _days > 0
                     ? () => setState(() {
-                      _days--;
-                      _saveData();
-                    })
-                : null,
+                        _days--;
+                        _saveData();
+                      })
+                    : null,
               ),
               Text('$_days', style: TextStyle(fontSize: 20)),
               IconButton(
                 icon: Icon(Icons.add_circle, color: Colors.green),
-                onPressed: _days > 0
-                    ? () => setState(() {
-                      _days++;
-                      _saveData();
-                    })
-                : null,
+                onPressed: () => setState(() {
+                  _days++;
+                  _saveData();
+                }),
               ),
             ],
           ),
@@ -271,6 +319,23 @@ class _SterilizaceState extends State<Sterilizace> {
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(onPressed: (){FirebaseFirestore.instance
+        .collection('Sterilisation')
+        .doc(widget.deviceId)
+        .set({'START': false}, SetOptions(merge: true))
+        .then((_) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(
+              'Sterilisation has been stopped!'
+            )),
+          );
+        })
+        .catchError((e) {
+          print("Error: $e");
+        });}, 
+          icon: Icon(Icons.stop_circle))
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -279,11 +344,11 @@ class _SterilizaceState extends State<Sterilizace> {
             children: [
               _buildSwitchRow("Ozone Sterilisation", _switchValue1, _updateSwitchValue1),
               _buildSwitchRow("UV Sterilisation", _switchValue2, _updateSwitchValue2),
-              SizedBox(height: 20),
+              SizedBox(height: 10),
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Select Sterilisation Duration\nin minutes or according\nto the size of the room',
+                  'Choose Sterilisation Duration by\nminutes or room size',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
@@ -291,8 +356,9 @@ class _SterilizaceState extends State<Sterilizace> {
                   ),
                 ),
               ),
+              SizedBox(height: 10),
               _buildSliderTime(),
-              SizedBox(height: 20),
+              SizedBox(height: 30),
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -304,9 +370,13 @@ class _SterilizaceState extends State<Sterilizace> {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 10),
               _buildSwitchRow("After leaving in minutes", _switchValue3, _updateSwitchValue3),
+              SizedBox(height: 10),
               _buildSliderStart(),
+              SizedBox(height: 30),
+              _buildStartButton("Start the sterilization"),
+              SizedBox(height: 30),
               _buildSwitchRow("Sterilization start time setting", _switchValue4, _updateSwitchValue4),
               ElevatedButton(
                 onPressed: _switchValue4 ? () => _selectTime(context) : null,

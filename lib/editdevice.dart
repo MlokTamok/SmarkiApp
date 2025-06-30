@@ -19,6 +19,8 @@ class _EditDeviceScreenState extends State<EditDeviceScreen> {
   late TextEditingController streetController;
   late TextEditingController houseNumberController;
   late TextEditingController floorController;
+  late TextEditingController NameSurnameController;
+  late TextEditingController phoneController;
 
   late TextEditingController otherNameController;
   late TextEditingController otherSurnameController;
@@ -28,12 +30,15 @@ class _EditDeviceScreenState extends State<EditDeviceScreen> {
   @override
   void initState() {
     super.initState();
+    print("Device Data: ${widget.deviceData}");
     nameController = TextEditingController(text: widget.deviceData['Name']);
     locationController = TextEditingController(text: widget.deviceData['Location']);
     townController = TextEditingController(text: widget.deviceData['Town']);
     streetController = TextEditingController(text: widget.deviceData['Street']);
     houseNumberController = TextEditingController(text: widget.deviceData['House Number']);
     floorController = TextEditingController(text: widget.deviceData['Floor']);
+    NameSurnameController = TextEditingController(text: widget.deviceData['Name and Surname']);
+    phoneController = TextEditingController(text: widget.deviceData['Phone Number']);
 
     otherNameController = TextEditingController();
     otherSurnameController = TextEditingController();
@@ -48,6 +53,8 @@ class _EditDeviceScreenState extends State<EditDeviceScreen> {
     streetController.dispose();
     houseNumberController.dispose();
     floorController.dispose();
+    NameSurnameController.dispose();
+    phoneController.dispose();
 
     otherNameController.dispose();
     otherSurnameController.dispose();
@@ -66,6 +73,8 @@ class _EditDeviceScreenState extends State<EditDeviceScreen> {
       'Street': streetController.text,
       'House Number': houseNumberController.text,
       'Floor': floorController.text,
+      'Name and Surname': NameSurnameController.text,
+      'Phone Number': phoneController.text,
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -294,7 +303,7 @@ Future<void> deleteDevice() async {
       appBar: AppBar(
         backgroundColor: const Color(0xFFAAD2BA),
         title: Text(
-          nameController.text.isEmpty ? "Device Details" : nameController.text,
+          "Device Settings",
           style: const TextStyle(
             color: Color.fromRGBO(63, 80, 66, 1), 
             fontWeight: FontWeight.bold
@@ -390,6 +399,38 @@ Future<void> deleteDevice() async {
             controller: floorController,
             decoration: InputDecoration(
               labelText: 'Floor',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide.none,
+              ),
+              fillColor: Color.fromRGBO(107, 143, 113, 0.1),
+              filled: true,
+            ),
+          ),
+          SizedBox(height: 10,),
+          Text(
+              'User Stettings',
+              style: TextStyle(color: Color.fromRGBO(63, 80, 66, 1), fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10,),
+            TextField(
+              controller: NameSurnameController,
+              decoration: InputDecoration(
+                labelText: 'Name and Surname',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(18),
+                  borderSide: BorderSide.none,
+                ),
+                fillColor: Color.fromRGBO(107, 143, 113, 0.1),
+                filled: true,
+              ),
+            ),
+          SizedBox(height: 10),
+
+          TextField(
+            controller: phoneController,
+            decoration: InputDecoration(
+              labelText: 'Phone Number',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(18),
                 borderSide: BorderSide.none,

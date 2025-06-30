@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.smarkiapp2"
+    namespace "com.example.smarkiapp2"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 

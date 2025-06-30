@@ -21,9 +21,14 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
   final TextEditingController _streetController = TextEditingController();
   final TextEditingController _housenController = TextEditingController();
   final TextEditingController _floorController = TextEditingController();
+  final TextEditingController _NameandSurnameController = TextEditingController();
+  final TextEditingController _PhoneNumberController = TextEditingController();
 
   String? _selectedDeviceVersion;
   final List<String> _deviceVersions = ['SMARKI DK 90', 'SMARKI DK 60', 'SMARKI DS 90'];
+
+  String? _selectedDeviceType;
+  final List<String> _deviceTypes = ['Kitchen hood', 'Air purifier', 'Air conditioner'];
 
   bool isCodeEntered = false;
   String scannedCode = '';
@@ -47,11 +52,14 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
         'user_email': user.email,
         'Name': '',
         'Device Version': '',
+        'Device Type': '',
         'Location': '',
         'Town': '',
         'Street': '',
         'House Number': '',
         'Floor': '',
+        'Name and Surname': '',
+        'Phone Number': '',
         'created_at': FieldValue.serverTimestamp(),
       });
 
@@ -66,11 +74,14 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
       if (data != null) {
         _nameController.text = data['Name'] ?? '';
         _selectedDeviceVersion = data['Device Version'] ?? null;
+        _selectedDeviceType = data['Device Type'] ?? null;
         _locationController.text = data['Location'] ?? '';
         _townController.text = data['Town'] ?? '';
         _streetController.text = data['Street'] ?? '';
         _housenController.text = data['House Number'] ?? '';
         _floorController.text = data['Floor'] ?? '';
+        _NameandSurnameController.text = data['Name and Surname'] ?? '';
+        _PhoneNumberController.text = data['Phone Number'] ?? '';
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -88,8 +99,11 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
       final house_n = _housenController.text.trim();
       final floor = _floorController.text.trim();
       final user = _auth.currentUser;
+      final nameandnurname = _NameandSurnameController.text.trim();
+      final phone_n = _PhoneNumberController.text.trim();
 
-      if (name.isEmpty || _selectedDeviceVersion == null || location.isEmpty || town.isEmpty || street.isEmpty || house_n.isEmpty || user == null || documentId == null) {
+      if (name.isEmpty || _selectedDeviceVersion == null || _selectedDeviceType == null ||
+          location.isEmpty || town.isEmpty || street.isEmpty || house_n.isEmpty || user == null || documentId == null || nameandnurname == null || phone_n == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Please fill in all fields')),
         );
@@ -100,11 +114,14 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
         await _firestore.collection('Device').doc(documentId).update({
           'Name': name,
           'Device Version': _selectedDeviceVersion,
+          'Device Type': _selectedDeviceType,
           'Location': location,
           'Town': town,
           'Street': street,
           'House Number': house_n,
           'Floor': floor,
+          'Name and Surname': nameandnurname,
+          'Phone Number': phone_n,
           'updated_at': FieldValue.serverTimestamp(),
         });
 
@@ -125,8 +142,7 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
     if (isCodeEntered && documentId != null) {
       try {
         await _firestore.collection('Device').doc(documentId).delete();
-      } catch (e) {
-      }
+      } catch (e) {}
     }
     return true;
   }
@@ -140,6 +156,8 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
     _streetController.dispose();
     _housenController.dispose();
     _floorController.dispose();
+    _NameandSurnameController.dispose();
+    _PhoneNumberController.dispose();
     super.dispose();
   }
 
@@ -152,23 +170,23 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
           backgroundColor: const Color(0xFFAAD2BA),
           title: const Text(
             "Add Device",
-          style: TextStyle(
+            style: TextStyle(
+              color: Color.fromRGBO(63, 80, 66, 1),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          centerTitle: true,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios_new_rounded),
             color: Color.fromRGBO(63, 80, 66, 1),
-            fontWeight: FontWeight.bold,
+            onPressed: () async {
+              bool shouldPop = await _onWillPop();
+              if (shouldPop) {
+                Navigator.of(context).pop();
+              }
+            },
           ),
         ),
-        centerTitle: true,
-        leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios_new_rounded),
-        color: Color.fromRGBO(63, 80, 66, 1),
-        onPressed: () async{
-          bool shouldPop = await _onWillPop();
-          if (shouldPop) {
-            Navigator.of(context).pop();
-          }
-        }
-      ),
-    ),
         body: Padding(
           padding: const EdgeInsets.all(16),
           child: isCodeEntered
@@ -204,12 +222,12 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
             shape: StadiumBorder(),
           ),
           child: const Text("Next",
-              style: TextStyle(
-                color: Color.fromRGBO(185, 245, 216, 1),
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+            style: TextStyle(
+              color: Color.fromRGBO(185, 245, 216, 1),
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
             ),
+          ),
         ),
       ],
     );
@@ -221,8 +239,20 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Text('Code: $scannedCode', style: TextStyle(fontSize: 18, color: Color.fromRGBO(63, 80, 66, 1),)),
+            Text('Code: $scannedCode', style: TextStyle(fontSize: 18, color: Color.fromRGBO(63, 80, 66, 1))),
             SizedBox(height: 20),
+            Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Device',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Color.fromRGBO(63, 80, 66, 1),
+                  ),
+                ),
+              ),
+            SizedBox(height: 10,),
             TextFormField(
               controller: _nameController,
               decoration: InputDecoration(
@@ -241,6 +271,36 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
                 return null;
               },
             ),
+//            SizedBox(height: 10),
+//            DropdownButtonFormField<String>(
+//              value: _selectedDeviceType,
+//              decoration: InputDecoration(
+//                labelText: 'Select Device Type',
+//                border: OutlineInputBorder(
+//                  borderRadius: BorderRadius.circular(18),
+//                  borderSide: BorderSide.none,
+//                ),
+//                fillColor: Color.fromRGBO(107, 143, 113, 0.1),
+//                filled: true,
+//              ),
+//              items: _deviceTypes.map((type) {
+//                return DropdownMenuItem(
+//                  value: type,
+//                  child: Text(type),
+//                );
+//              }).toList(),
+//              onChanged: (value) {
+//                setState(() {
+//                  _selectedDeviceType = value;
+//                });
+//              },
+//             validator: (value) {
+//                if (value == null) {
+//                  return 'Device type is required';
+//                }
+//                return null;
+//              },
+//            ),
             SizedBox(height: 10),
             DropdownButtonFormField<String>(
               value: _selectedDeviceVersion,
@@ -264,7 +324,7 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
                   _selectedDeviceVersion = value;
                 });
               },
-              validator: (value) {
+             validator: (value) {
                 if (value == null) {
                   return 'Device version is required';
                 }
@@ -359,6 +419,57 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
                 fillColor: Color.fromRGBO(107, 143, 113, 0.1),
                 filled: true,
               ),
+            ),
+            SizedBox(height: 20),
+            Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'User',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Color.fromRGBO(63, 80, 66, 1),
+                  ),
+                ),
+              ),
+            SizedBox(height: 10),
+            TextFormField(
+              controller: _NameandSurnameController,
+              decoration: InputDecoration(
+                labelText: 'Name and Surname',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(18),
+                  borderSide: BorderSide.none,
+                ),
+                fillColor: Color.fromRGBO(107, 143, 113, 0.1),
+                filled: true,
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Name and Surname is required';
+                }
+                return null;
+              },
+            ),
+            SizedBox(height: 10),
+            TextFormField(
+              controller: _PhoneNumberController,
+              decoration: InputDecoration(
+                labelText: 'Phone Number',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(18),
+                  borderSide: BorderSide.none,
+                ),
+                fillColor: Color.fromRGBO(107, 143, 113, 0.1),
+                filled: true,
+              ),
+              keyboardType: TextInputType.phone,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Phone Number is required';
+                }
+                return null;
+              },
             ),
             SizedBox(height: 20),
             ElevatedButton(
