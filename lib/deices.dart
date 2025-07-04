@@ -59,7 +59,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
         },
         child: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
-              .collection('Device')
+              .collection('App-Device')
               .where('user_email', isEqualTo: userEmail)
               .orderBy('created_at', descending: true)
               .snapshots(),

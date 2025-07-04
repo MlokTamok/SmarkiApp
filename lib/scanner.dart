@@ -46,7 +46,7 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
     }
 
     try {
-      final docRef = await _firestore.collection('Device').add({
+      final docRef = await _firestore.collection('App-Device').add({
         'code': code,
         'user_id': user.uid,
         'user_email': user.email,
@@ -111,7 +111,7 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
       }
 
       try {
-        await _firestore.collection('Device').doc(documentId).update({
+        await _firestore.collection('App-Device').doc(documentId).update({
           'Name': name,
           'Device Version': _selectedDeviceVersion,
           'Device Type': _selectedDeviceType,
@@ -141,7 +141,7 @@ class _AddDeviceFlowScreenState extends State<AddDeviceFlowScreen> {
   Future<bool> _onWillPop() async {
     if (isCodeEntered && documentId != null) {
       try {
-        await _firestore.collection('Device').doc(documentId).delete();
+        await _firestore.collection('App-Device').doc(documentId).delete();
       } catch (e) {}
     }
     return true;

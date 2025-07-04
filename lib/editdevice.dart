@@ -64,7 +64,7 @@ class _EditDeviceScreenState extends State<EditDeviceScreen> {
 
   Future<void> saveChanges() async {
     await FirebaseFirestore.instance
-        .collection('Device')
+        .collection('App-Device')
         .doc(widget.deviceId)
         .update({
       'Name': nameController.text,
@@ -124,7 +124,7 @@ Future<void> deleteDevice() async {
   if (shouldDelete) {
     try {
       await FirebaseFirestore.instance
-          .collection('Device')
+          .collection('App-Device')
           .doc(widget.deviceId)
           .delete();
 
@@ -154,7 +154,7 @@ Future<void> deleteDevice() async {
       return;
     }
 
-    await FirebaseFirestore.instance.collection('Users').add({
+    await FirebaseFirestore.instance.collection("App-Other Users").add({
       'deviceId': widget.deviceId,
       'name': otherNameController.text.trim(),
       'surname': otherSurnameController.text.trim(),
@@ -176,7 +176,7 @@ Future<void> deleteDevice() async {
   }
 
   Future<void> deleteUser(String userId) async {
-    await FirebaseFirestore.instance.collection('Users').doc(userId).delete();
+    await FirebaseFirestore.instance.collection("App-Other Users").doc(userId).delete();
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('User deleted')));
   }
 
@@ -269,7 +269,7 @@ Future<void> deleteDevice() async {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                FirebaseFirestore.instance.collection('Users').doc(userId).update({
+                FirebaseFirestore.instance.collection("App-Other Users").doc(userId).update({
                   'name': nameCtrl.text.trim(),
                   'surname': surnameCtrl.text.trim(),
                   'phoneNumber': phoneCtrl.text.trim(),
@@ -551,7 +551,7 @@ Future<void> deleteDevice() async {
             ),
             StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
-                  .collection('Users')
+                  .collection("App-Other Users")
                   .where('deviceId', isEqualTo: widget.deviceId)
                   .orderBy('timestamp', descending: true)
                   .snapshots(),

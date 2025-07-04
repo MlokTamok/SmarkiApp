@@ -23,7 +23,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
 
     if (name.isNotEmpty && location.isNotEmpty && currentUser != null) {
       try {
-        await FirebaseFirestore.instance.collection('Device').add({
+        await FirebaseFirestore.instance.collection('App-Device').add({
           'user_id': currentUser.uid,
           'user_email': currentUser.email,
           'code': widget.scannedCode, 

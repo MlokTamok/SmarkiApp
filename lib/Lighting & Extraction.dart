@@ -27,7 +27,7 @@ class _OsvetleniOdsavaniState extends State<OsvetleniOdsavani> {
 
   void _loadData() {
     FirebaseFirestore.instance
-        .collection('Lighting & Extraction')
+        .collection("App-Lighting & Extraction")
         .doc(widget.deviceId)
         .get()
         .then((docSnapshot) {
@@ -45,7 +45,7 @@ class _OsvetleniOdsavaniState extends State<OsvetleniOdsavani> {
 
   void _saveData() {
     FirebaseFirestore.instance
-        .collection('Lighting & Extraction')
+        .collection("App-Lighting & Extraction")
         .doc(widget.deviceId)
         .set({
       'On/Off Light': _switchValue1,

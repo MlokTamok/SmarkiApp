@@ -28,7 +28,7 @@ class _SecurityState extends State<Security> {
 
   void _loadData() {
     FirebaseFirestore.instance
-        .collection('Secutity')
+        .collection("App-Security")
         .doc(widget.deviceId)
         .get()
         .then((docSnapshot) {
@@ -47,7 +47,7 @@ class _SecurityState extends State<Security> {
 
   void _saveData() {
     FirebaseFirestore.instance
-        .collection('Secutity')
+        .collection("App-Security")
         .doc(widget.deviceId)
         .set({
       'Random off/on': _switchValue1,

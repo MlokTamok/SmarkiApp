@@ -35,7 +35,7 @@ class _SterilizaceState extends State<Sterilizace> {
 
   void _loadData() {
     FirebaseFirestore.instance
-        .collection('Sterilisation')
+        .collection("App-Sterilisation")
         .doc(widget.deviceId)
         .get()
         .then((docSnapshot) {
@@ -63,7 +63,7 @@ class _SterilizaceState extends State<Sterilizace> {
   }
 
   void _saveData() {
-    FirebaseFirestore.instance.collection('Sterilisation').doc(widget.deviceId).set({
+    FirebaseFirestore.instance.collection("App-Sterilisation").doc(widget.deviceId).set({
       'OzoneSterilisation': _switchValue1,
       'UVSterilisation': _switchValue2,
       'AfterLeaving': _switchValue3,
@@ -225,7 +225,7 @@ class _SterilizaceState extends State<Sterilizace> {
   child: ElevatedButton(
     onPressed: () {
       FirebaseFirestore.instance
-        .collection('Sterilisation')
+        .collection("App-Sterilisation")
         .doc(widget.deviceId)
         .set({'START': true}, SetOptions(merge: true))
         .then((_) {
@@ -321,7 +321,7 @@ class _SterilizaceState extends State<Sterilizace> {
         centerTitle: true,
         actions: [
           IconButton(onPressed: (){FirebaseFirestore.instance
-        .collection('Sterilisation')
+        .collection("App-Sterilisation")
         .doc(widget.deviceId)
         .set({'START': false}, SetOptions(merge: true))
         .then((_) {

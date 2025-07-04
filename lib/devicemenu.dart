@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:smarkiapp2/Osvetleni%20a%20odsavani.dart';
+import 'package:smarkiapp2/Lighting%20&%20Extraction.dart';
 import 'package:smarkiapp2/Security.dart';
 import 'package:smarkiapp2/Video%20prezentace.dart';
 import 'package:smarkiapp2/editdevice.dart';
-import 'package:smarkiapp2/sterilizace.dart';
+import 'package:smarkiapp2/Sterilisation.dart';
 
 class DeviceMenu extends StatefulWidget {
   final Map<String, dynamic> device;
@@ -21,7 +21,7 @@ class _DeviceMenuState extends State<DeviceMenu> {
     final deviceId = widget.device['id'];
 
     return StreamBuilder<DocumentSnapshot>(
-      stream: FirebaseFirestore.instance.collection('Device').doc(deviceId).snapshots(),
+      stream: FirebaseFirestore.instance.collection('App-Device').doc(deviceId).snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Scaffold(
@@ -116,10 +116,9 @@ class _DeviceMenuState extends State<DeviceMenu> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => AudioAndVideo(
-                          deviceId: deviceId,
-                          deviceData: deviceData,
-                        ),
+                        builder: (context) => AudioAndVideoScreen(
+                          deviceId: deviceId
+                          )
                       ),
                     );
                   },
